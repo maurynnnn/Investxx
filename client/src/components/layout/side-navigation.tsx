@@ -22,7 +22,7 @@ interface NavItemProps {
 
 const NavItem = ({ href, label, icon, currentPath, onClick, isAdmin = false }: NavItemProps) => {
   const isActive = currentPath === href || (href === "/admin" && currentPath.startsWith("/admin"));
-  
+
   return (
     <Link href={href}>
       <div 
@@ -40,7 +40,7 @@ const NavItem = ({ href, label, icon, currentPath, onClick, isAdmin = false }: N
           <span className="mr-3">{icon}</span>
         )}
         <span>{label}</span>
-        
+
         {isAdmin && (
           <span className="ml-auto px-1.5 py-0.5 text-[9px] font-semibold rounded bg-secondary/20 text-secondary">
             ADMIN
@@ -55,7 +55,7 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
   const [location] = useLocation();
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
-  
+
   const navigationItems = [
     { href: "/", label: "Dashboard", icon: "ri-dashboard-line" },
     { href: "/investments", label: "Investimentos", icon: "ri-funds-line" },
@@ -71,7 +71,7 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
     } else {
       document.body.style.overflow = 'auto';
     }
-    
+
     return () => {
       document.body.style.overflow = 'auto';
     };
@@ -81,11 +81,11 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const particles: any[] = [];
-    
+
     const init = () => {
       canvas.className = 'absolute inset-0 pointer-events-none opacity-30';
       document.querySelector('aside')?.appendChild(canvas);
-      
+
       const resize = () => {
         const aside = document.querySelector('aside');
         if (aside) {
@@ -93,10 +93,10 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
           canvas.height = aside.clientHeight;
         }
       };
-      
+
       resize();
       window.addEventListener('resize', resize);
-      
+
       for (let i = 0; i < 30; i++) {
         particles.push({
           x: Math.random() * canvas.width,
@@ -107,37 +107,37 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
           opacity: Math.random() * 0.5 + 0.1
         });
       }
-      
+
       const animate = () => {
         if (!ctx) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         particles.forEach(particle => {
           particle.x += particle.speedX;
           particle.y += particle.speedY;
-          
+
           if (particle.x > canvas.width) particle.x = 0;
           if (particle.x < 0) particle.x = canvas.width;
           if (particle.y > canvas.height) particle.y = 0;
           if (particle.y < 0) particle.y = canvas.height;
-          
+
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(52, 130, 246, ${particle.opacity})`;
           ctx.fill();
         });
-        
+
         requestAnimationFrame(animate);
       };
-      
+
       animate();
-      
+
       return () => {
         window.removeEventListener('resize', resize);
         canvas.remove();
       };
     };
-    
+
     init();
   }, []);
 
@@ -151,7 +151,7 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
           aria-hidden="true"
         />
       )}
-      
+
       <aside 
         className={cn(
           "fixed top-16 bottom-0 left-0 z-50 w-72 lg:w-64 xl:w-72 bg-dark-surface/95 backdrop-blur-sm border-r border-dark-border transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 shadow-xl",
@@ -170,10 +170,10 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
               <X className="h-5 w-5" />
             </Button>
           </div>
-          
+
           {/* Navigation Links */}
           <nav className="flex-1 p-4 space-y-1">
-            <div className="mb-4 px-4 pt-1">
+            <div className="mb-4 px-4">
               <h3 className="text-sm font-semibold text-light-text uppercase tracking-[0.15em] bg-gradient-to-r from-primary/20 to-transparent p-2 rounded-lg">Menu Principal</h3>
             </div>
             {navigationItems.map((item) => (
@@ -186,10 +186,10 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
                 onClick={onClose}
               />
             ))}
-            
+
 {/* Removido o menu administrativo da barra lateral */}
           </nav>
-          
+
           {/* Help & Support */}
           <div className="p-4 border-t border-dark-border mt-auto">
             <div className="p-4 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
