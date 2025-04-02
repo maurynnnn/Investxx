@@ -173,7 +173,7 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
 
           {/* Navigation Links */}
           <nav className="flex-1 p-4 space-y-1">
-            <div className="mb-4 px-4">
+            <div className="mb-2 px-4 -mt-2">
               <h3 className="text-sm font-semibold text-light-text uppercase tracking-[0.15em] bg-gradient-to-r from-primary/20 to-transparent p-2 rounded-lg">Menu Principal</h3>
             </div>
             {navigationItems.map((item) => (
