@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    
+    --card: 222.2 84% 8%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 3.5%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 242 100% 69%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 190 100% 48%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62.8% 60.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 23%;
+    --input: 217.2 32.6% 23%;
+    --ring: 242 100% 69%;
+    
+    --sidebar-background: 222.2 84% 6.5%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 242 100% 69%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 23%;
+    --sidebar-ring: 242 100% 69%;
+    
+    --chart-1: 242 100% 69%;
+    --chart-2: 190 100% 48%;
+    --chart-3: 41 100% 60%;
+    --chart-4: 143 70% 59%;
+    --chart-5: 333 85% 65%;
+    
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    @apply min-h-screen; 
+  }
+}
+
+/* Custom Styles */
+.glass-card {
+  backdrop-filter: blur(10px);
+  background: rgba(45, 45, 45, 0.75);
+  border: 1px solid rgba(61, 61, 61, 0.3);
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+/* Colors */
+.text-positive {
+  color: #4CAF50;
+}
+
+.text-negative {
+  color: #FF5757;
+}
+
+.bg-positive {
+  background-color: #4CAF50;
+}
+
+.bg-negative {
+  background-color: #FF5757;
+}
+
+.bg-positive\/20 {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.bg-negative\/20 {
+  background-color: rgba(255, 87, 87, 0.2);
+}
+
+/* Dark mode colors */
+.bg-dark-bg {
+  background-color: #121212;
+}
+
+.bg-dark-surface {
+  background-color: #1E1E1E;
+}
+
+.bg-dark-card {
+  background-color: #2D2D2D;
+}
+
+.border-dark-border {
+  border-color: #3D3D3D;
+}
+
+.text-light-text {
+  color: #F7F7F7;
+}
+
+.text-light-subtext {
+  color: #B0B0B0;
+}
