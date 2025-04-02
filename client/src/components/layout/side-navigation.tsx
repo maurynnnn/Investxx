@@ -159,8 +159,9 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
         )}
       >
         <div className="flex flex-col h-full overflow-auto">
-          {/* Close Button */}
-          <div className="h-16 flex items-center justify-end px-4">
+          {/* Header with Menu Title and Close Button */}
+          <div className="h-16 flex items-center justify-between px-4">
+            <h3 className="text-sm font-semibold text-light-text uppercase tracking-[0.15em]">Menu Principal</h3>
             <Button 
               variant="ghost"
               size="icon"
@@ -173,9 +174,6 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
 
           {/* Navigation Links */}
           <nav className="flex-1 p-4 space-y-1">
-            <div className="mb-2 px-4 -mt-2">
-              <h3 className="text-[11px] font-bold text-light-text uppercase tracking-[0.2em] bg-gradient-to-r from-primary/10 to-transparent p-1.5">MENU PRINCIPAL</h3>
-            </div>
             {navigationItems.map((item) => (
               <NavItem
                 key={item.href}
@@ -186,8 +184,6 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
                 onClick={onClose}
               />
             ))}
-
-{/* Removido o menu administrativo da barra lateral */}
           </nav>
 
           {/* Help & Support */}
