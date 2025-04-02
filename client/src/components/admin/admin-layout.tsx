@@ -167,20 +167,9 @@ export function AdminLayout({
             }`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold text-light-text">{title}</h1>
-                  {subtitle && <p className="text-light-subtext">{subtitle}</p>}
-                </div>
-                {isMobile && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleBackToApp}
-                    className="flex items-center"
-                  >
-                    <ChevronLeft className="mr-1 h-4 w-4" />
-                    App
-                  </Button>
-                )}
+                <h1 className="text-2xl font-bold text-light-text">{title}</h1>
+                {subtitle && <p className="text-light-subtext">{subtitle}</p>}
+              </div>
               </div>
               <div className="mt-2 flex items-center text-xs text-light-subtext">
                 <a href="/admin" className="hover:text-primary">Dashboard</a>
