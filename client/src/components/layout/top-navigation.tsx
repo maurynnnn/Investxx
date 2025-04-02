@@ -46,7 +46,7 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
   };
 
   return (
-    <nav className="bg-dark-surface border-b border-dark-border sticky top-0 z-10">
+    <nav className="bg-dark-surface/95 border-b border-dark-border backdrop-blur-sm shadow-md sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
@@ -65,10 +65,10 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
               <Link href="/">
-                <a className="flex items-center">
+                <div className="flex items-center cursor-pointer">
                   <i className="ri-line-chart-fill text-2xl text-primary mr-2"></i>
                   <span className="font-display font-bold text-xl text-light-text hidden sm:block">InvestX</span>
-                </a>
+                </div>
               </Link>
             </div>
             
@@ -76,14 +76,14 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
             <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
               {navigationLinks.map((link) => (
                 <Link key={link.href} href={link.href}>
-                  <a className={`
-                    inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+                  <span className={`
+                    inline-flex items-center px-3 py-2 border-b-2 text-sm font-medium cursor-pointer
                     ${location === link.href 
                       ? 'border-primary text-light-text' 
                       : 'border-transparent text-light-subtext hover:border-secondary hover:text-light-text'}
                   `}>
                     {link.label}
-                  </a>
+                  </span>
                 </Link>
               ))}
             </div>

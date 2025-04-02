@@ -21,10 +21,10 @@ const NavItem = ({ href, label, icon, currentPath, onClick }: NavItemProps) => {
   
   return (
     <Link href={href}>
-      <a 
+      <div 
         onClick={onClick}
         className={cn(
-          "flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
+          "flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer",
           isActive 
             ? "bg-gradient-to-r from-primary/20 to-primary/5 text-primary border-l-2 border-primary" 
             : "text-light-subtext hover:text-light-text hover:bg-dark-surface/80 hover:border-l-2 hover:border-primary/30"
@@ -32,7 +32,7 @@ const NavItem = ({ href, label, icon, currentPath, onClick }: NavItemProps) => {
       >
         <i className={`${icon} text-xl mr-3`}></i>
         <span>{label}</span>
-      </a>
+      </div>
     </Link>
   );
 };
@@ -51,7 +51,7 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
   return (
     <aside 
       className={cn(
-        "fixed inset-y-0 left-0 z-30 w-72 bg-dark-surface/95 backdrop-blur-sm border-r border-dark-border transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 shadow-xl",
+        "fixed top-16 bottom-0 left-0 z-30 w-72 bg-dark-surface/95 backdrop-blur-sm border-r border-dark-border transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 shadow-xl",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}
     >
@@ -59,10 +59,10 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
         {/* Logo and Close Button */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-dark-border">
           <Link href="/">
-            <a className="flex items-center">
+            <div className="flex items-center cursor-pointer">
               <i className="ri-line-chart-fill text-2xl text-primary mr-2"></i>
               <span className="font-display font-bold text-xl text-light-text">InvestX</span>
-            </a>
+            </div>
           </Link>
           <Button 
             variant="ghost"

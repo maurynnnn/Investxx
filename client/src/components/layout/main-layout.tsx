@@ -18,7 +18,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg text-light-text">
-      <TopNavigation onMenuClick={toggleSidebar} />
+      {/* Fixed position Top Navigation */}
+      <div className="sticky top-0 z-50">
+        <TopNavigation onMenuClick={toggleSidebar} />
+      </div>
       
       <div className="flex flex-1">
         {/* Mobile Sidebar Overlay */}
