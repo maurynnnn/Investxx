@@ -160,11 +160,11 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
       >
         <div className="flex flex-col h-full overflow-auto">
           {/* Close Button */}
-          <div className="h-16 flex items-center justify-end px-4 border-b border-dark-border">
+          <div className="h-16 flex items-center justify-end px-4">
             <Button 
               variant="ghost"
               size="icon"
-              className="lg:hidden text-light-subtext hover:text-light-text"
+              className="text-light-subtext hover:text-light-text"
               onClick={onClose}
             >
               <X className="h-5 w-5" />
