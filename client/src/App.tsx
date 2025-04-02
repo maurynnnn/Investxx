@@ -28,19 +28,19 @@ function Router() {
     <Switch>
       <Route path="/auth" component={AuthPage} />
       
-      {/* Main Navigation Routes */}
-      <ProtectedRoute path="/" component={DashboardPage} />
-      <ProtectedRoute path="/investments" component={InvestmentsPage} />
-      <ProtectedRoute path="/deposits" component={DepositsPage} />
-      <ProtectedRoute path="/withdrawals" component={WithdrawalsPage} />
-      <ProtectedRoute path="/referrals" component={ReferralsPage} />
+      {/* Main Navigation Routes - Somente para usuários comuns */}
+      <ProtectedRoute path="/" component={DashboardPage} userOnly={true} />
+      <ProtectedRoute path="/investments" component={InvestmentsPage} userOnly={true} />
+      <ProtectedRoute path="/deposits" component={DepositsPage} userOnly={true} />
+      <ProtectedRoute path="/withdrawals" component={WithdrawalsPage} userOnly={true} />
+      <ProtectedRoute path="/referrals" component={ReferralsPage} userOnly={true} />
       
-      {/* User Menu Routes */}
-      <ProtectedRoute path="/profile" component={ProfilePage} />
-      <ProtectedRoute path="/settings" component={SettingsPage} />
-      <ProtectedRoute path="/support" component={SupportPage} />
-      <ProtectedRoute path="/transactions" component={TransactionsPage} />
-      <ProtectedRoute path="/payment-methods" component={PaymentMethodsPage} />
+      {/* User Menu Routes - Somente para usuários comuns */}
+      <ProtectedRoute path="/profile" component={ProfilePage} userOnly={true} />
+      <ProtectedRoute path="/settings" component={SettingsPage} userOnly={true} />
+      <ProtectedRoute path="/support" component={SupportPage} userOnly={true} />
+      <ProtectedRoute path="/transactions" component={TransactionsPage} userOnly={true} />
+      <ProtectedRoute path="/payment-methods" component={PaymentMethodsPage} userOnly={true} />
       
       {/* Admin Routes */}
       <ProtectedRoute path="/admin" component={AdminDashboard} adminOnly={true} />

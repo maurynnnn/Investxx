@@ -61,10 +61,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(["/api/user"], user);
-      toast({
-        title: "Login realizado com sucesso",
-        description: `Bem-vindo de volta, ${user.firstName}!`,
-      });
+      
+      // Redirecionar para o painel administrativo se for admin
+      if (user.role === 'admin') {
+        window.location.href = '/admin';
+        toast({
+          title: "Login administrativo",
+          description: `Bem-vindo ao painel administrativo, ${user.firstName}!`,
+        });
+      } else {
+        toast({
+          title: "Login realizado com sucesso",
+          description: `Bem-vindo de volta, ${user.firstName}!`,
+        });
+      }
     },
     onError: (error: Error) => {
       toast({
@@ -103,10 +113,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await apiRequest("POST", "/api/logout");
     },
     onSuccess: () => {
+      // Verificar se era um administrador antes de limpar os dados
+      const currentUser = queryClient.getQueryData<User>(["/api/user"]);
+      const wasAdmin = currentUser?.role === 'admin';
+      
+      // Limpar dados do usuário
       queryClient.setQueryData(["/api/user"], null);
+      
+      // Redirecionar para a página de login
+      window.location.href = "/auth";
+      
       toast({
         title: "Logout realizado com sucesso",
-        description: "Você foi desconectado com sucesso.",
+        description: wasAdmin 
+          ? "Você saiu do painel administrativo." 
+          : "Você foi desconectado com sucesso.",
       });
     },
     onError: (error: Error) => {
