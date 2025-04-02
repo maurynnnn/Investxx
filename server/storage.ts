@@ -12,7 +12,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(user: InsertUser & { referralCode: string }): Promise<User>;
+  createUser(user: InsertUser & { referralCode: string, role?: string }): Promise<User>;
   updateUserBalance(id: number, newBalance: number): Promise<User | undefined>;
   updateUserLastLogin(id: number): Promise<User | undefined>;
   
@@ -115,21 +115,30 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createUser(user: InsertUser & { referralCode: string }): Promise<User> {
+  async createUser(user: InsertUser & { referralCode: string, role?: string }): Promise<User> {
     const id = this.userIdCounter++;
     const now = new Date();
     
-    // Define o primeiro usuário como admin, todos os outros como user
+    // Define o primeiro usuário como admin, todos os outros como user (a menos que seja especificado)
     const isFirstUser = this.users.size === 0;
-    const role = isFirstUser ? "admin" : "user";
+    const role = user.role || (isFirstUser ? "admin" : "user");
     
+    // Atualizar este código para garantir que todos os campos obrigatórios estejam incluídos
     const newUser: User = {
       id,
       ...user,
-      role, // Adicionando o role (admin para o primeiro usuário)
+      role,
       balance: 0,
       createdAt: now,
       lastLogin: now,
+      // Garantir que todos os campos obrigatórios estejam incluídos
+      username: user.username,
+      email: user.email,
+      password: user.password,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      referralCode: user.referralCode,
+      referredBy: user.referredBy || null,
     };
     this.users.set(id, newUser);
     return newUser;
@@ -164,7 +173,12 @@ export class MemStorage implements IStorage {
 
   async createPlan(plan: InsertPlan): Promise<Plan> {
     const id = this.planIdCounter++;
-    const newPlan: Plan = { id, ...plan };
+    // Garantir que isActive está definido com valor padrão true se não foi especificado
+    const newPlan: Plan = { 
+      id, 
+      ...plan,
+      isActive: plan.isActive !== undefined ? plan.isActive : true
+    };
     this.plans.set(id, newPlan);
     return newPlan;
   }
@@ -274,6 +288,7 @@ export class MemStorage implements IStorage {
       status: "pending",
       createdAt: now,
       updatedAt: now,
+      receipt: deposit.receipt || null, // Garantir que receipt é string | null
     };
     this.deposits.set(id, newDeposit);
     return newDeposit;

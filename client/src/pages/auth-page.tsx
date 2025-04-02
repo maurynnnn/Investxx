@@ -160,6 +160,27 @@ export default function AuthPage() {
                       "Entrar"
                     )}
                   </Button>
+
+                  <div className="relative my-4">
+                    <Separator className="bg-dark-border absolute inset-0" />
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-dark-card px-2 text-muted-foreground">Ou</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dark-border hover:bg-dark-surface/50 text-light-text"
+                    disabled={loginMutation.isPending}
+                    onClick={() => {
+                      loginForm.setValue("email", "admin@investx.com");
+                      loginForm.setValue("password", "admin123");
+                      loginForm.handleSubmit(onLoginSubmit)();
+                    }}
+                  >
+                    Login como Admin (Teste)
+                  </Button>
                 </form>
               </Form>
             </TabsContent>

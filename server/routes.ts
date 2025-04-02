@@ -1,16 +1,18 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
+import { setupAuth, hashPassword } from "./auth";
 import { z } from "zod";
 import { insertPlanSchema, insertInvestmentSchema, insertDepositSchema, insertWithdrawalSchema } from "@shared/schema";
+import { nanoid } from "nanoid";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   setupAuth(app);
 
-  // Initialize the database with default investment plans
+  // Initialize the database with default investment plans and admin user
   await initializePlans();
+  await createAdminUser();
 
   // Investment Plans API
   app.get("/api/plans", async (req, res) => {
@@ -302,6 +304,34 @@ async function initializePlans() {
     for (const plan of plans) {
       await storage.createPlan(plan);
     }
+  }
+}
+
+// Criar usuário admin para testes
+async function createAdminUser() {
+  try {
+    // Verificar se já existe um usuário com este email
+    const existingAdmin = await storage.getUserByEmail("admin@investx.com");
+    if (!existingAdmin) {
+      // Criar usuário admin
+      const referralCode = nanoid(8); // Importar nanoid de "nanoid" ou usar outro gerador
+      const hashedPassword = await hashPassword("admin123");
+      
+      const adminUser = await storage.createUser({
+        username: "admin",
+        email: "admin@investx.com",
+        password: hashedPassword,
+        firstName: "Admin",
+        lastName: "User",
+        referredBy: null,
+        referralCode,
+        role: "admin"
+      });
+      
+      console.log("Admin user created:", adminUser.email);
+    }
+  } catch (error) {
+    console.error("Error creating admin user:", error);
   }
 }
 
