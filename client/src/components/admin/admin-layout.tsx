@@ -124,7 +124,7 @@ export function AdminLayout({
         {/* Admin Sidebar - Mobile Version */}
         {isMobile && (
           <aside
-            className={`fixed inset-y-0 left-0 z-50 w-[280px] max-w-[85vw] transform border-r border-dark-border bg-dark-component transition-transform duration-300 ease-in-out overflow-hidden ${
+            className={`fixed inset-y-0 left-0 z-50 w-[280px] max-w-[85vw] transform border-r border-dark-border bg-dark-component/95 backdrop-blur-2xl transition-transform duration-300 ease-in-out overflow-hidden ${
               sidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
@@ -137,15 +137,7 @@ export function AdminLayout({
             <div className="overflow-y-auto h-[calc(100vh-8rem)]">
               <AdminNavigation />
             </div>
-            <div className="absolute bottom-0 w-full p-4 border-t border-dark-border bg-dark-component">
-              <Button
-                variant="ghost"
-                className="w-full justify-start mb-2"
-                onClick={handleBackToApp}
-              >
-                <Home className="mr-2 h-4 w-4" />
-                Voltar ao App
-              </Button>
+            <div className="absolute bottom-0 w-full p-4 border-t border-dark-border bg-dark-component/95 backdrop-blur-2xl">
               <Button
                 variant="ghost"
                 className="w-full justify-start text-negative hover:text-negative"
