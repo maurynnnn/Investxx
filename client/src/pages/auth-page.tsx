@@ -161,11 +161,12 @@ export default function AuthPage() {
                     )}
                   </Button>
                   
-                  {/* Dica para administradores */}
+                  {/* Informações sobre acesso administrativo */}
                   <div className="mt-6 p-3 rounded-md bg-secondary/10 border border-secondary/20">
-                    <p className="text-xs text-light-subtext">
-                      <span className="font-medium text-secondary">Nota para administradores:</span> O primeiro usuário cadastrado na plataforma recebe automaticamente privilégios de administrador.
-                    </p>
+                    <p className="text-xs font-medium text-secondary mb-1">Acesso Administrativo</p>
+                    <p className="text-xs text-light-subtext">Para acessar o painel administrativo, utilize:</p>
+                    <p className="text-xs text-light-subtext mt-1">Email: <span className="font-medium text-light-text">admin123@gmail.com</span></p>
+                    <p className="text-xs text-light-subtext">Senha: <span className="font-medium text-light-text">admin123</span></p>
                   </div>
                 </form>
               </Form>

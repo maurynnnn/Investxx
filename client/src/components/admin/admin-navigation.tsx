@@ -1,14 +1,5 @@
-import React from "react";
 import { useLocation } from "wouter";
-import { cn } from "@/lib/utils";
-import { 
-  Users, 
-  LineChart, 
-  BanknoteIcon, 
-  Settings, 
-  Home,
-  GanttChartSquare 
-} from "lucide-react";
+import { Layers, Users, LayoutDashboard, PieChart, CreditCard, Activity, Bell, Settings } from "lucide-react";
 
 interface AdminNavItemProps {
   href: string;
@@ -17,75 +8,83 @@ interface AdminNavItemProps {
   active: boolean;
 }
 
-const AdminNavItem: React.FC<AdminNavItemProps> = ({ 
-  href, 
-  label, 
-  icon, 
-  active 
-}) => {
+const AdminNavItem = ({ href, label, icon, active }: AdminNavItemProps) => {
   const [_, navigate] = useLocation();
 
   return (
-    <li>
-      <button
-        onClick={() => navigate(href)}
-        className={cn(
-          "w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
-          active 
-            ? "bg-primary/10 text-primary" 
-            : "text-light-subtext hover:bg-dark-surface hover:text-light-text"
-        )}
-      >
-        <span className="flex-shrink-0">{icon}</span>
-        <span className="font-medium">{label}</span>
-      </button>
-    </li>
+    <a
+      href={href}
+      onClick={(e) => {
+        e.preventDefault();
+        navigate(href);
+      }}
+      className={`flex items-center px-3 py-2 rounded-md my-1 text-sm ${
+        active
+          ? "bg-primary/10 text-primary font-medium"
+          : "text-light-subtext hover:bg-dark-bg hover:text-light-text"
+      }`}
+    >
+      <span className="mr-3">{icon}</span>
+      {label}
+    </a>
   );
 };
 
 export function AdminNavigation() {
   const [location] = useLocation();
-  
-  const navItems = [
+
+  const adminNavItems = [
     {
       href: "/admin",
-      label: "Visão Geral",
-      icon: <Home className="h-5 w-5" />
+      label: "Dashboard",
+      icon: <LayoutDashboard className="h-5 w-5" />,
     },
     {
       href: "/admin/users",
       label: "Usuários",
-      icon: <Users className="h-5 w-5" />
-    },
-    {
-      href: "/admin/investments",
-      label: "Investimentos",
-      icon: <LineChart className="h-5 w-5" />
-    },
-    {
-      href: "/admin/withdrawals",
-      label: "Saques",
-      icon: <BanknoteIcon className="h-5 w-5" />
+      icon: <Users className="h-5 w-5" />,
     },
     {
       href: "/admin/plans",
-      label: "Planos",
-      icon: <GanttChartSquare className="h-5 w-5" />
+      label: "Planos de Investimento",
+      icon: <Layers className="h-5 w-5" />,
+    },
+    {
+      href: "/admin/withdrawals",
+      label: "Saques Pendentes",
+      icon: <CreditCard className="h-5 w-5" />,
+    },
+    {
+      href: "/admin/statistics",
+      label: "Estatísticas",
+      icon: <PieChart className="h-5 w-5" />,
+    },
+    {
+      href: "/admin/transactions",
+      label: "Transações",
+      icon: <Activity className="h-5 w-5" />,
+    },
+    {
+      href: "/admin/notifications",
+      label: "Notificações",
+      icon: <Bell className="h-5 w-5" />,
     },
     {
       href: "/admin/settings",
       label: "Configurações",
-      icon: <Settings className="h-5 w-5" />
-    }
+      icon: <Settings className="h-5 w-5" />,
+    },
   ];
 
   return (
-    <div className="bg-dark-card rounded-xl p-4 shadow-sm">
-      <h2 className="text-lg font-bold text-light-text px-4 mb-4">
-        Administração
-      </h2>
-      <ul className="space-y-1">
-        {navItems.map((item) => (
+    <div className="py-4">
+      <div className="px-3 mb-4">
+        <h2 className="text-xs font-semibold text-light-subtext uppercase tracking-wider">
+          Gerenciamento
+        </h2>
+      </div>
+      <nav className="px-2 space-y-1">
+        {adminNavItems.map((item) => (
           <AdminNavItem
             key={item.href}
             href={item.href}
@@ -94,7 +93,7 @@ export function AdminNavigation() {
             active={location === item.href}
           />
         ))}
-      </ul>
+      </nav>
     </div>
   );
 }

@@ -49,6 +49,32 @@ export function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Verificar se existe o usuário admin
+  const configureAdminUser = async () => {
+    try {
+      const adminUser = await storage.getUserByEmail("admin123@gmail.com");
+      
+      if (!adminUser) {
+        // Criar o usuário admin padrão se não existir
+        await storage.createUser({
+          email: "admin123@gmail.com",
+          username: "admin123",
+          firstName: "Admin",
+          lastName: "Sistema",
+          password: await hashPassword("admin123"),
+          role: "admin",
+          referralCode: generateReferralCode()
+        });
+        console.log("Usuário administrador criado com sucesso!");
+      }
+    } catch (error) {
+      console.error("Erro ao configurar usuário administrador:", error);
+    }
+  };
+  
+  // Chamar a função para configurar o usuário admin
+  configureAdminUser();
+
   passport.use(
     new LocalStrategy(
       {

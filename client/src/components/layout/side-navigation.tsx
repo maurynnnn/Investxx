@@ -128,21 +128,7 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
               />
             ))}
             
-            {isAdmin && (
-              <>
-                <div className="my-4 px-4">
-                  <h3 className="text-xs font-medium text-secondary uppercase tracking-wider">Área Administrativa</h3>
-                </div>
-                <NavItem
-                  href="/admin"
-                  label="Painel Admin"
-                  icon={<ShieldCheck className="h-5 w-5 text-secondary" />}
-                  currentPath={location}
-                  onClick={onClose}
-                  isAdmin={true}
-                />
-              </>
-            )}
+{/* Removido o menu administrativo da barra lateral */}
           </nav>
           
           {/* Help & Support */}

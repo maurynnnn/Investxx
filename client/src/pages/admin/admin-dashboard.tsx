@@ -1,189 +1,183 @@
-import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Users, Wallet, HelpCircle, LineChart, Activity, AlertTriangle } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminLayout } from "@/components/admin/admin-layout";
-import { useLocation } from "wouter";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/utils";
+import { Loader2, Users, ArrowUpCircle, ArrowDownCircle, Clock } from "lucide-react";
+
+interface AdminSummary {
+  totalUsers: number;
+  totalDeposits: number;
+  totalWithdrawals: number;
+  totalInvestments: number;
+  pendingWithdrawals: number;
+  recentUsers: {
+    id: number;
+    username: string;
+    email: string;
+    createdAt: string;
+  }[];
+  recentTransactions: {
+    id: number;
+    type: string;
+    amount: number;
+    userId: number;
+    username: string;
+    createdAt: string;
+  }[];
+}
 
 export default function AdminDashboard() {
-  const { user } = useAuth();
-  const [_, navigate] = useLocation();
-
-  // TODO: Substituir por consultas reais quando as APIs estiverem prontas
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ["/api/admin/stats"],
-    queryFn: () => {
-      // Dados simulados para visualização
-      return {
-        usersCount: 156,
-        activeInvestmentsCount: 248,
-        totalInvestedAmount: 1750000,
-        pendingWithdrawalsCount: 12,
-        dailyTransactionsCount: 45,
-        monthlySummary: [
-          { month: "Jan", investments: 120000, withdrawals: 75000 },
-          { month: "Feb", investments: 145000, withdrawals: 82000 },
-          { month: "Mar", investments: 180000, withdrawals: 95000 },
-          { month: "Apr", investments: 210000, withdrawals: 110000 },
-          { month: "May", investments: 190000, withdrawals: 105000 },
-          { month: "Jun", investments: 225000, withdrawals: 115000 },
-        ]
-      };
+  const { data: adminSummary, isLoading } = useQuery<AdminSummary>({
+    queryKey: ["/api/admin/summary"],
+    // Mocked data since we're not implementing the backend yet
+    placeholderData: {
+      totalUsers: 124,
+      totalDeposits: 487500,
+      totalWithdrawals: 156200,
+      totalInvestments: 356000,
+      pendingWithdrawals: 12,
+      recentUsers: [
+        { id: 1, username: "maurosa", email: "mauro@example.com", createdAt: "2023-05-12T00:00:00.000Z" },
+        { id: 2, username: "investor2023", email: "investor@example.com", createdAt: "2023-05-11T00:00:00.000Z" },
+        { id: 3, username: "financial_guru", email: "guru@example.com", createdAt: "2023-05-10T00:00:00.000Z" },
+        { id: 4, username: "money_maker", email: "money@example.com", createdAt: "2023-05-09T00:00:00.000Z" },
+        { id: 5, username: "wealth_builder", email: "wealth@example.com", createdAt: "2023-05-08T00:00:00.000Z" },
+      ],
+      recentTransactions: [
+        { id: 1, type: "deposit", amount: 1000, userId: 1, username: "maurosa", createdAt: "2023-05-12T00:00:00.000Z" },
+        { id: 2, type: "withdrawal", amount: 500, userId: 2, username: "investor2023", createdAt: "2023-05-11T00:00:00.000Z" },
+        { id: 3, type: "investment", amount: 2000, userId: 3, username: "financial_guru", createdAt: "2023-05-10T00:00:00.000Z" },
+        { id: 4, type: "yield", amount: 150, userId: 4, username: "money_maker", createdAt: "2023-05-09T00:00:00.000Z" },
+        { id: 5, type: "commission", amount: 75, userId: 5, username: "wealth_builder", createdAt: "2023-05-08T00:00:00.000Z" },
+      ],
     },
-    staleTime: 5 * 60 * 1000, // 5 minutos
   });
 
-  if (!user || user.role !== 'admin') {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-dark-background p-4">
-        <AlertTriangle className="h-16 w-16 text-destructive mb-4" />
-        <h2 className="text-2xl font-semibold text-destructive mb-2">Acesso não autorizado</h2>
-        <p className="text-light-subtext mb-6">Você não tem permissão para acessar esta área.</p>
-        <button 
-          onClick={() => navigate("/")}
-          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-        >
-          Voltar para o Dashboard
-        </button>
-      </div>
+      <AdminLayout title="Painel Administrativo" subtitle="Visão geral da plataforma">
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout 
-      title="Visão Geral"
-      subtitle="Monitore todos os aspectos da plataforma em um só lugar"
-    >
-      <div className="space-y-6">
-        {statsLoading ? (
-          <div className="flex justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-secondary" />
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="bg-dark-card hover:bg-dark-card/90 border-dark-border transition-colors duration-200">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-light-subtext">
-                    Usuários Registrados
-                  </CardTitle>
-                  <Users className="h-4 w-4 text-secondary" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-light-text">{stats?.usersCount || 0}</div>
-                  <p className="text-xs text-light-subtext mt-1">+12 na última semana</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-dark-card hover:bg-dark-card/90 border-dark-border transition-colors duration-200">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-light-subtext">
-                    Investimentos Ativos
-                  </CardTitle>
-                  <LineChart className="h-4 w-4 text-secondary" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-light-text">{stats?.activeInvestmentsCount || 0}</div>
-                  <p className="text-xs text-light-subtext mt-1">+23 desde o último mês</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-dark-card hover:bg-dark-card/90 border-dark-border transition-colors duration-200">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-light-subtext">
-                    Total Investido
-                  </CardTitle>
-                  <Wallet className="h-4 w-4 text-secondary" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-light-text">
-                    {formatCurrency(stats?.totalInvestedAmount || 0)}
-                  </div>
-                  <p className="text-xs text-light-subtext mt-1">+5.2% desde o último mês</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-dark-card hover:bg-dark-card/90 border-dark-border transition-colors duration-200">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-light-subtext">
-                    Saques Pendentes
-                  </CardTitle>
-                  <Activity className="h-4 w-4 text-secondary" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-light-text">{stats?.pendingWithdrawalsCount || 0}</div>
-                  <p className="text-xs text-light-subtext mt-1">Necessitam aprovação</p>
-                </CardContent>
-              </Card>
-            </div>
+    <AdminLayout title="Painel Administrativo" subtitle="Visão geral da plataforma">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <Card className="bg-card-bg border-card-border shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Usuários
+            </CardTitle>
+            <CardDescription>Total de contas registradas</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-light-text">{adminSummary?.totalUsers}</p>
+          </CardContent>
+        </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-dark-card border-dark-border">
-                <CardHeader>
-                  <CardTitle>Movimentações Mensais</CardTitle>
-                  <CardDescription>
-                    Comparativo entre investimentos e saques
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="h-80">
-                  <div className="flex items-center justify-center h-full">
-                    <HelpCircle className="h-10 w-10 text-secondary/50" />
-                    <p className="ml-2 text-light-subtext">Gráfico de barras será exibido aqui</p>
+        <Card className="bg-card-bg border-card-border shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <ArrowUpCircle className="h-5 w-5 text-positive" />
+              Depósitos
+            </CardTitle>
+            <CardDescription>Total em depósitos</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-light-text">
+              {formatCurrency(adminSummary?.totalDeposits || 0)}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card-bg border-card-border shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <ArrowDownCircle className="h-5 w-5 text-negative" />
+              Saques
+            </CardTitle>
+            <CardDescription>Total em saques</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-light-text">
+              {formatCurrency(adminSummary?.totalWithdrawals || 0)}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card-bg border-card-border shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Clock className="h-5 w-5 text-amber-500" />
+              Saques Pendentes
+            </CardTitle>
+            <CardDescription>Aguardando aprovação</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-light-text">{adminSummary?.pendingWithdrawals}</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-card-bg border-card-border shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">Usuários Recentes</CardTitle>
+            <CardDescription>Últimas contas criadas na plataforma</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-5">
+              {adminSummary?.recentUsers.map((user) => (
+                <div key={user.id} className="flex justify-between items-center border-b border-dark-border pb-3 last:border-0">
+                  <div>
+                    <p className="font-medium text-light-text">{user.username}</p>
+                    <p className="text-sm text-light-subtext">{user.email}</p>
                   </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-dark-card border-dark-border">
-                <CardHeader>
-                  <CardTitle>Atividades Recentes</CardTitle>
-                  <CardDescription>
-                    Últimas operações no sistema
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 border-b border-dark-border pb-3">
-                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-light-text">Novo investimento criado</p>
-                        <p className="text-xs text-light-subtext">Usuário #123 - Plano Premium - R$ 15.000</p>
-                      </div>
-                      <div className="text-xs text-light-subtext">Há 2h</div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 border-b border-dark-border pb-3">
-                      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-light-text">Solicitação de saque</p>
-                        <p className="text-xs text-light-subtext">Usuário #78 - R$ 5.400</p>
-                      </div>
-                      <div className="text-xs text-light-subtext">Há 4h</div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 border-b border-dark-border pb-3">
-                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-light-text">Novo usuário registrado</p>
-                        <p className="text-xs text-light-subtext">Referido por: Usuário #45</p>
-                      </div>
-                      <div className="text-xs text-light-subtext">Há 6h</div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 pb-1">
-                      <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-light-text">Rendimentos distribuídos</p>
-                        <p className="text-xs text-light-subtext">45 investimentos - Total: R$ 12.450</p>
-                      </div>
-                      <div className="text-xs text-light-subtext">Há 12h</div>
-                    </div>
+                  <div className="text-sm text-light-subtext">
+                    {new Date(user.createdAt).toLocaleDateString()}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              ))}
             </div>
-          </>
-        )}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card-bg border-card-border shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">Transações Recentes</CardTitle>
+            <CardDescription>Últimas movimentações na plataforma</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-5">
+              {adminSummary?.recentTransactions.map((transaction) => (
+                <div key={transaction.id} className="flex justify-between items-center border-b border-dark-border pb-3 last:border-0">
+                  <div>
+                    <p className="font-medium text-light-text capitalize">{transaction.type}</p>
+                    <p className="text-sm text-light-subtext">{transaction.username}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-medium ${
+                      transaction.type === "deposit" || transaction.type === "yield" || transaction.type === "commission" 
+                        ? "text-positive" 
+                        : transaction.type === "withdrawal" 
+                          ? "text-negative" 
+                          : "text-primary"
+                    }`}>
+                      {formatCurrency(transaction.amount)}
+                    </p>
+                    <p className="text-sm text-light-subtext">
+                      {new Date(transaction.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
