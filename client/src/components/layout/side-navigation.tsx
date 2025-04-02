@@ -77,6 +77,70 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const particles: any[] = [];
+    
+    const init = () => {
+      canvas.className = 'absolute inset-0 pointer-events-none opacity-30';
+      document.querySelector('aside')?.appendChild(canvas);
+      
+      const resize = () => {
+        const aside = document.querySelector('aside');
+        if (aside) {
+          canvas.width = aside.clientWidth;
+          canvas.height = aside.clientHeight;
+        }
+      };
+      
+      resize();
+      window.addEventListener('resize', resize);
+      
+      for (let i = 0; i < 30; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 2 + 1,
+          speedX: Math.random() * 0.5 - 0.25,
+          speedY: Math.random() * 0.5 - 0.25,
+          opacity: Math.random() * 0.5 + 0.1
+        });
+      }
+      
+      const animate = () => {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(particle => {
+          particle.x += particle.speedX;
+          particle.y += particle.speedY;
+          
+          if (particle.x > canvas.width) particle.x = 0;
+          if (particle.x < 0) particle.x = canvas.width;
+          if (particle.y > canvas.height) particle.y = 0;
+          if (particle.y < 0) particle.y = canvas.height;
+          
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(52, 130, 246, ${particle.opacity})`;
+          ctx.fill();
+        });
+        
+        requestAnimationFrame(animate);
+      };
+      
+      animate();
+      
+      return () => {
+        window.removeEventListener('resize', resize);
+        canvas.remove();
+      };
+    };
+    
+    init();
+  }, []);
+
   return (
     <>
       {/* Background overlay no modo móvel */}
@@ -95,13 +159,8 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
         )}
       >
         <div className="flex flex-col h-full overflow-auto">
-          {/* Logo and Close Button */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-dark-border">
-            <Link href="/">
-              <div className="cursor-pointer">
-                <Logo size="small" withText={true} />
-              </div>
-            </Link>
+          {/* Close Button */}
+          <div className="h-16 flex items-center justify-end px-4 border-b border-dark-border">
             <Button 
               variant="ghost"
               size="icon"
