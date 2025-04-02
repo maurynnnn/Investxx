@@ -1,10 +1,9 @@
 import { useLocation, Link } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { X, HelpCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import Logo from "@/components/ui/logo";
 
 interface SideNavigationProps {
   isOpen: boolean;
@@ -55,6 +54,7 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
   const [location] = useLocation();
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   
   const navigationItems = [
     { href: "/", label: "Dashboard", icon: "ri-dashboard-line" },
@@ -63,6 +63,13 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
     { href: "/withdrawals", label: "Saques", icon: "ri-bank-card-line" },
     { href: "/referrals", label: "Indicações", icon: "ri-user-add-line" },
   ];
+
+  // Admin items se o usuário for admin
+  const adminItems = isAdmin ? [
+    { href: "/admin", label: "Painel Admin", icon: <ShieldCheck className="h-5 w-5" /> },
+    { href: "/admin/users", label: "Usuários", icon: "ri-user-settings-line" },
+    { href: "/admin/withdrawals", label: "Aprovações", icon: "ri-secure-payment-line" }
+  ] : [];
 
   // Prevenindo rolagem do body quando a sidebar está aberta no modo móvel
   useEffect(() => {
@@ -76,6 +83,95 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
       document.body.style.overflow = 'auto';
     };
   }, [isOpen]);
+  
+  // Efeito para animar partículas no background da sidebar
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    // Ajustando o tamanho do canvas
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    
+    // Criar partículas
+    const particlesArray: Particle[] = [];
+    const numberOfParticles = 40;
+    
+    class Particle {
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      color: string;
+      
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 0.5;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+        this.color = isAdmin ? 
+          `rgba(${Math.random() * 20 + 130}, ${Math.random() * 30 + 160}, ${Math.random() * 60 + 190}, ${Math.random() * 0.5 + 0.1})` : 
+          `rgba(${Math.random() * 40 + 110}, ${Math.random() * 30 + 90}, ${Math.random() * 60 + 200}, ${Math.random() * 0.5 + 0.1})`;
+      }
+      
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        
+        // Rebater na borda
+        if (this.x > canvas.width || this.x < 0) {
+          this.speedX = -this.speedX;
+        }
+        if (this.y > canvas.height || this.y < 0) {
+          this.speedY = -this.speedY;
+        }
+      }
+      
+      draw() {
+        if (!ctx) return;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+    
+    function init() {
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+    
+    init();
+    
+    function animate() {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+      }
+      
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [isAdmin, isOpen]);
 
   return (
     <>
@@ -95,17 +191,21 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
         )}
       >
         <div className="flex flex-col h-full overflow-auto">
-          {/* Logo and Close Button */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-dark-border">
-            <Link href="/">
-              <div className="cursor-pointer">
-                <Logo size="small" withText={true} />
-              </div>
-            </Link>
+          {/* Canvas para partículas animadas e botão de fechar */}
+          <div className="h-16 flex items-center justify-between px-4 border-b border-dark-border relative overflow-hidden">
+            <canvas 
+              ref={canvasRef}
+              className="absolute inset-0 z-0 w-full h-full"
+            />
+            <div className="font-display font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80 z-10">
+              <span className="ml-2 uppercase tracking-wider text-sm font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                {isAdmin ? 'Admin Panel' : 'Menu'}
+              </span>
+            </div>
             <Button 
               variant="ghost"
               size="icon"
-              className="lg:hidden text-light-subtext hover:text-light-text"
+              className="lg:hidden text-light-subtext hover:text-light-text z-10"
               onClick={onClose}
             >
               <X className="h-5 w-5" />
@@ -128,7 +228,25 @@ export default function SideNavigation({ isOpen, onClose }: SideNavigationProps)
               />
             ))}
             
-            {/* Seção admin foi removida da navegação lateral a pedido do cliente */}
+            {/* Itens de navegação do admin */}
+            {isAdmin && adminItems.length > 0 && (
+              <>
+                <div className="mt-6 mb-4 px-4">
+                  <h3 className="text-xs font-medium text-secondary uppercase tracking-wider">Administração</h3>
+                </div>
+                {adminItems.map((item) => (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    currentPath={location}
+                    onClick={onClose}
+                    isAdmin={true}
+                  />
+                ))}
+              </>
+            )}
           </nav>
           
           {/* Help & Support */}

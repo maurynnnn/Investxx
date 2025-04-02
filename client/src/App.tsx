@@ -18,7 +18,10 @@ import SupportPage from "@/pages/support-page";
 import TransactionsPage from "@/pages/transactions-page";
 import PaymentMethodsPage from "@/pages/payment-methods-page";
 
-// Admin pages foram removidas conforme solicitado
+// Admin pages
+import AdminDashboard from "@/pages/admin/admin-dashboard";
+import UsersManagement from "@/pages/admin/users-management";
+import WithdrawalApprovals from "@/pages/admin/withdrawal-approvals";
 
 function Router() {
   return (
@@ -38,6 +41,11 @@ function Router() {
       <ProtectedRoute path="/support" component={SupportPage} />
       <ProtectedRoute path="/transactions" component={TransactionsPage} />
       <ProtectedRoute path="/payment-methods" component={PaymentMethodsPage} />
+      
+      {/* Admin Routes */}
+      <ProtectedRoute path="/admin" component={AdminDashboard} />
+      <ProtectedRoute path="/admin/users" component={UsersManagement} />
+      <ProtectedRoute path="/admin/withdrawals" component={WithdrawalApprovals} />
       
       <Route component={NotFound} />
     </Switch>

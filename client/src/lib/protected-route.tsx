@@ -32,7 +32,23 @@ export function ProtectedRoute({
     );
   }
 
-  // A verificação de admin foi removida conforme solicitado
+  // Redirecionar usuários admin para dashboard admin quando acessam a rota raiz
+  if (user.role === 'admin' && path === '/' && !window.location.pathname.startsWith('/admin')) {
+    return (
+      <Route path={path}>
+        <Redirect to="/admin" />
+      </Route>
+    );
+  }
+
+  // Verificar se um usuário não-admin está tentando acessar rotas de admin
+  if (user.role !== 'admin' && path.startsWith('/admin')) {
+    return (
+      <Route path={path}>
+        <Redirect to="/" />
+      </Route>
+    );
+  }
 
   return <Route path={path} component={Component} />;
 }
