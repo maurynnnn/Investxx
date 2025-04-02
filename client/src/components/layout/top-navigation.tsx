@@ -130,7 +130,24 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
                   </span>
                 </Link>
               ))}
-              {/* A opção de Admin foi removida da navegação a pedido do cliente */}
+              {isAdmin && (
+                <Link href="/admin">
+                  <span 
+                    className={`
+                      inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium cursor-pointer
+                      transform ${animateHeader ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}
+                      transition-all duration-500 ease-out bg-primary/10 rounded-t-md 
+                      ${location.startsWith('/admin') 
+                        ? 'border-primary text-light-text' 
+                        : 'border-transparent text-light-subtext hover:border-secondary hover:text-light-text'}
+                    `}
+                    style={{ transitionDelay: `${150 + navigationLinks.length * 75}ms` }}
+                  >
+                    <ShieldCheck className="h-4 w-4 mr-1.5" />
+                    Admin
+                  </span>
+                </Link>
+              )}
             </div>
           </div>
           
@@ -217,7 +234,20 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
                     <span>Métodos de Pagamento</span>
                   </DropdownMenuItem>
                 </div>
-                {/* A seção de administração foi removida a pedido do cliente */}
+                {isAdmin && (
+                  <>
+                    <DropdownMenuSeparator className="bg-dark-border" />
+                    <div className="p-1">
+                      <DropdownMenuItem 
+                        className="cursor-pointer flex items-center p-2 hover:bg-secondary/10 rounded-md transition-colors duration-150" 
+                        onClick={() => navigate("/admin")}
+                      >
+                        <ShieldCheck className="mr-3 h-4 w-4 text-secondary" />
+                        <span>Painel de Administração</span>
+                      </DropdownMenuItem>
+                    </div>
+                  </>
+                )}
                 <DropdownMenuSeparator className="bg-dark-border" />
                 <div className="p-1">
                   <DropdownMenuItem 

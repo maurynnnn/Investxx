@@ -11,7 +11,6 @@ import { useLocation } from "wouter";
 import { Loader2, Plus } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Plan, Transaction, Investment, User } from "@shared/schema";
-import { useEffect } from "react";
 
 // Definindo a interface para o objeto do Dashboard
 interface DashboardData {
@@ -27,9 +26,6 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [_, navigate] = useLocation();
-  
-  // Não há mais redirecionamento para painéis administrativos
-  // Esta funcionalidade foi removida conforme solicitado
   
   const { data: dashboardData, isLoading } = useQuery<DashboardData>({
     queryKey: ["/api/dashboard"],
