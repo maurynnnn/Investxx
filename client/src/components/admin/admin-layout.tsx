@@ -128,7 +128,7 @@ export function AdminLayout({
               sidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
-            <div className="flex h-16 items-center justify-between border-b border-dark-border p-4 bg-dark-component sticky top-0 z-10">
+            <div className="flex h-16 items-center justify-between border-b border-dark-border p-4 bg-dark-component/95 backdrop-blur-xl sticky top-0 z-10 shadow-md">
               <div className="font-bold text-primary text-xl">InvestX Admin</div>
               <Button variant="ghost" size="icon" onClick={toggleSidebar}>
                 <X className="h-5 w-5" />
