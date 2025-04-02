@@ -19,8 +19,9 @@ import {
   Menu,
   CreditCard,
   BarChart3,
-  ChevronUp
+  ShieldCheck
 } from "lucide-react";
+import Logo from "@/components/ui/logo";
 
 interface TopNavigationProps {
   onMenuClick: () => void;
@@ -48,6 +49,8 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
     if (!user) return "?";
     return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
   };
+
+  const isAdmin = user?.role === 'admin';
 
   // Detectar o scroll para efeitos de animação
   useEffect(() => {
@@ -77,7 +80,7 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
         scrolled 
           ? 'bg-dark-surface/95 shadow-lg' 
           : 'bg-dark-surface/70'
-      } border-b border-dark-border backdrop-blur-md sticky top-0 z-10 transition-all duration-300 ease-in-out`}
+      } border-b border-dark-border backdrop-blur-md fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
@@ -94,20 +97,15 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
               </Button>
             </div>
             
-            {/* Logo com animação */}
+            {/* Nova Logo com animação */}
             <div 
               className={`flex-shrink-0 flex items-center transform ${
                 animateHeader ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
               } transition-all duration-500 ease-out`}
             >
               <Link href="/">
-                <div className="flex items-center cursor-pointer group">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-2 group-hover:scale-110 transition-transform duration-300">
-                    <i className="ri-line-chart-fill text-2xl text-primary"></i>
-                  </div>
-                  <span className="font-display font-bold text-xl text-light-text hidden sm:block group-hover:text-primary transition-colors duration-300">
-                    InvestX
-                  </span>
+                <div className="cursor-pointer">
+                  <Logo size="medium" withText={true} />
                 </div>
               </Link>
             </div>
@@ -132,6 +130,24 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
                   </span>
                 </Link>
               ))}
+              {isAdmin && (
+                <Link href="/admin">
+                  <span 
+                    className={`
+                      inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium cursor-pointer
+                      transform ${animateHeader ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}
+                      transition-all duration-500 ease-out bg-primary/10 rounded-t-md 
+                      ${location.startsWith('/admin') 
+                        ? 'border-primary text-light-text' 
+                        : 'border-transparent text-light-subtext hover:border-secondary hover:text-light-text'}
+                    `}
+                    style={{ transitionDelay: `${150 + navigationLinks.length * 75}ms` }}
+                  >
+                    <ShieldCheck className="h-4 w-4 mr-1.5" />
+                    Admin
+                  </span>
+                </Link>
+              )}
             </div>
           </div>
           
@@ -170,7 +186,7 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
                   variant="ghost"
                   className="ml-3 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-primary hover:bg-dark-surface/80 transition-colors duration-300"
                 >
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/80 text-white flex items-center justify-center group-hover:from-primary/80 group-hover:to-primary transition-all duration-300">
+                  <div className={`h-8 w-8 rounded-full ${isAdmin ? 'bg-gradient-to-br from-secondary to-primary' : 'bg-gradient-to-br from-primary to-primary/80'} text-white flex items-center justify-center group-hover:from-primary/80 group-hover:to-primary transition-all duration-300`}>
                     <span className="font-medium">{getInitials()}</span>
                   </div>
                 </Button>
@@ -178,11 +194,18 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
               <DropdownMenuContent align="end" className="w-64 bg-dark-card border-dark-border">
                 <div className="p-2">
                   <div className="flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-r from-dark-surface/80 to-dark-surface/20">
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary/70 text-white flex items-center justify-center">
+                    <div className={`h-12 w-12 rounded-full ${isAdmin ? 'bg-gradient-to-br from-secondary to-primary' : 'bg-gradient-to-br from-primary to-primary/70'} text-white flex items-center justify-center`}>
                       <span className="font-medium text-base">{getInitials()}</span>
                     </div>
                     <div className="flex flex-col">
-                      <p className="text-sm font-medium text-light-text">{user?.firstName} {user?.lastName}</p>
+                      <div className="flex items-center">
+                        <p className="text-sm font-medium text-light-text">{user?.firstName} {user?.lastName}</p>
+                        {isAdmin && (
+                          <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold rounded-sm bg-secondary/20 text-secondary">
+                            ADMIN
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-light-subtext truncate max-w-[150px]">{user?.email}</p>
                     </div>
                   </div>
@@ -211,6 +234,20 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
                     <span>Métodos de Pagamento</span>
                   </DropdownMenuItem>
                 </div>
+                {isAdmin && (
+                  <>
+                    <DropdownMenuSeparator className="bg-dark-border" />
+                    <div className="p-1">
+                      <DropdownMenuItem 
+                        className="cursor-pointer flex items-center p-2 hover:bg-secondary/10 rounded-md transition-colors duration-150" 
+                        onClick={() => navigate("/admin")}
+                      >
+                        <ShieldCheck className="mr-3 h-4 w-4 text-secondary" />
+                        <span>Painel de Administração</span>
+                      </DropdownMenuItem>
+                    </div>
+                  </>
+                )}
                 <DropdownMenuSeparator className="bg-dark-border" />
                 <div className="p-1">
                   <DropdownMenuItem 

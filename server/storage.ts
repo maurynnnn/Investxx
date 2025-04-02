@@ -118,9 +118,15 @@ export class MemStorage implements IStorage {
   async createUser(user: InsertUser & { referralCode: string }): Promise<User> {
     const id = this.userIdCounter++;
     const now = new Date();
+    
+    // Define o primeiro usuário como admin, todos os outros como user
+    const isFirstUser = this.users.size === 0;
+    const role = isFirstUser ? "admin" : "user";
+    
     const newUser: User = {
       id,
       ...user,
+      role, // Adicionando o role (admin para o primeiro usuário)
       balance: 0,
       createdAt: now,
       lastLogin: now,

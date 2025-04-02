@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
+  role: text("role").notNull().default("user"), // Adicionando campo role (user, admin)
   balance: real("balance").notNull().default(0),
   referralCode: text("referral_code").notNull().unique(),
   referredBy: integer("referred_by").references(() => users.id),

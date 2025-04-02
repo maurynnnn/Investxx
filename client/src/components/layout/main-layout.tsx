@@ -6,6 +6,7 @@ import { useMobile } from "@/hooks/use-mobile";
 
 interface MainLayoutProps {
   children: React.ReactNode;
+  isAdmin?: boolean;
 }
 
 // Definição da classe Particle fora do componente e do useEffect
@@ -18,13 +19,13 @@ class Particle {
   color: string;
   opacity: number;
 
-  constructor(width: number, height: number) {
+  constructor(width: number, height: number, color: string = '#3482F6') {
     this.x = Math.random() * width;
     this.y = Math.random() * height;
     this.size = Math.random() * 2 + 0.5;
     this.speedX = Math.random() * 0.5 - 0.25;
     this.speedY = Math.random() * 0.5 - 0.25;
-    this.color = '#3482F6'; // Cor primária
+    this.color = color; // Cor primária ou secundária (admin)
     this.opacity = Math.random() * 0.5 + 0.1; // Transparência aleatória
   }
 
@@ -50,7 +51,7 @@ class Particle {
   }
 }
 
-export default function MainLayout({ children }: MainLayoutProps) {
+export default function MainLayout({ children, isAdmin = false }: MainLayoutProps) {
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -71,13 +72,19 @@ export default function MainLayout({ children }: MainLayoutProps) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    // Cores baseadas no modo (normal ou admin)
+    const primaryColor = isAdmin ? '#12B7E2' : '#3482F6'; // Azul secundário para admin
+    const secondaryColor = isAdmin ? '#6C63FF' : '#3482F6'; // Roxo primário para admin
+
     // Configuração das partículas
     const particleCount = 50;
     const particles: Particle[] = [];
 
     // Criar partículas
     for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle(canvas.width, canvas.height));
+      // Alterna entre cores primárias e secundárias para admin
+      const color = isAdmin && i % 2 === 0 ? secondaryColor : primaryColor;
+      particles.push(new Particle(canvas.width, canvas.height, color));
     }
 
     // Função de animação
@@ -101,7 +108,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
           if (distance < 100) {
             ctx.beginPath();
-            ctx.strokeStyle = '#3482F6';
+            ctx.strokeStyle = particles[i].color;
             ctx.globalAlpha = 0.1 * (1 - distance / 100);
             ctx.lineWidth = 0.5;
             ctx.moveTo(particles[i].x, particles[i].y);
@@ -131,7 +138,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isAdmin]);
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg text-light-text overflow-hidden relative">
@@ -141,26 +148,19 @@ export default function MainLayout({ children }: MainLayoutProps) {
         className="absolute inset-0 z-0 pointer-events-none opacity-50"
       />
       
-      {/* Fixed position Top Navigation */}
-      <div className="sticky top-0 z-50">
-        <TopNavigation onMenuClick={toggleSidebar} />
-      </div>
+      {/* Top Navigation - fixo */}
+      <TopNavigation onMenuClick={toggleSidebar} />
+      
+      {/* Espaçador para compensar o header fixo */}
+      <div className="h-16"></div>
       
       <div className="flex flex-1 relative z-10">
-        {/* Mobile Sidebar Overlay */}
-        {isMobile && sidebarOpen && (
-          <div 
-            className="fixed inset-0 z-20 bg-black/50 backdrop-blur-sm transition-all duration-300"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-        
         {/* Sidebar */}
         <SideNavigation isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         
         {/* Main Content */}
-        <main className="flex-grow px-3 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-7xl w-full mx-auto transition-all duration-300">
-          <div className="w-full h-full">
+        <main className={`flex-grow px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full mx-auto transition-all duration-300 ${isAdmin ? 'lg:pl-64 xl:pl-72' : ''}`}>
+          <div className="w-full h-full max-w-7xl mx-auto">
             {children}
           </div>
         </main>
