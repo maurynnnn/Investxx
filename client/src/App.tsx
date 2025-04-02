@@ -19,11 +19,9 @@ import TransactionsPage from "@/pages/transactions-page";
 import PaymentMethodsPage from "@/pages/payment-methods-page";
 
 // Admin pages
-import AdminIndex from "@/pages/admin/index";
 import AdminDashboard from "@/pages/admin/admin-dashboard";
-import UsersManagement from "@/pages/admin/users-management";
-import WithdrawalApprovals from "@/pages/admin/withdrawal-approvals";
-import PlansManagement from "@/pages/admin/plans-management";
+import AdminUsersPage from "@/pages/admin/admin-users-page";
+import AdminPlansPage from "@/pages/admin/admin-plans-page";
 
 function Router() {
   return (
@@ -45,11 +43,9 @@ function Router() {
       <ProtectedRoute path="/payment-methods" component={PaymentMethodsPage} />
       
       {/* Admin Routes */}
-      <ProtectedRoute path="/admin" component={AdminIndex} adminOnly={true} />
-      <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} adminOnly={true} />
-      <ProtectedRoute path="/admin/users" component={UsersManagement} adminOnly={true} />
-      <ProtectedRoute path="/admin/withdrawals" component={WithdrawalApprovals} adminOnly={true} />
-      <ProtectedRoute path="/admin/plans" component={PlansManagement} adminOnly={true} />
+      <ProtectedRoute path="/admin" component={AdminDashboard} adminOnly={true} />
+      <ProtectedRoute path="/admin/users" component={AdminUsersPage} adminOnly={true} />
+      <ProtectedRoute path="/admin/plans" component={AdminPlansPage} adminOnly={true} />
       
       <Route component={NotFound} />
     </Switch>
