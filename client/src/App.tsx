@@ -12,16 +12,31 @@ import InvestmentsPage from "@/pages/investments-page";
 import DepositsPage from "@/pages/deposits-page";
 import WithdrawalsPage from "@/pages/withdrawals-page";
 import ReferralsPage from "@/pages/referrals-page";
+import ProfilePage from "@/pages/profile-page";
+import SettingsPage from "@/pages/settings-page";
+import SupportPage from "@/pages/support-page";
+import TransactionsPage from "@/pages/transactions-page";
+import PaymentMethodsPage from "@/pages/payment-methods-page";
 
 function Router() {
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
+      
+      {/* Main Navigation Routes */}
       <ProtectedRoute path="/" component={DashboardPage} />
       <ProtectedRoute path="/investments" component={InvestmentsPage} />
       <ProtectedRoute path="/deposits" component={DepositsPage} />
       <ProtectedRoute path="/withdrawals" component={WithdrawalsPage} />
       <ProtectedRoute path="/referrals" component={ReferralsPage} />
+      
+      {/* User Menu Routes */}
+      <ProtectedRoute path="/profile" component={ProfilePage} />
+      <ProtectedRoute path="/settings" component={SettingsPage} />
+      <ProtectedRoute path="/support" component={SupportPage} />
+      <ProtectedRoute path="/transactions" component={TransactionsPage} />
+      <ProtectedRoute path="/payment-methods" component={PaymentMethodsPage} />
+      
       <Route component={NotFound} />
     </Switch>
   );

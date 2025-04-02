@@ -24,7 +24,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         {/* Mobile Sidebar Overlay */}
         {isMobile && sidebarOpen && (
           <div 
-            className="fixed inset-0 z-20 bg-black/50 transition-opacity"
+            className="fixed inset-0 z-20 bg-black/50 backdrop-blur-sm transition-all duration-300"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -33,8 +33,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <SideNavigation isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         
         {/* Main Content */}
-        <main className="flex-grow px-4 sm:px-6 lg:px-8 py-6 max-w-7xl w-full mx-auto">
-          {children}
+        <main className="flex-grow px-3 sm:px-6 lg:px-8 py-4 sm:py-6 max-w-7xl w-full mx-auto transition-all duration-300">
+          <div className="w-full h-full">
+            {children}
+          </div>
         </main>
       </div>
       

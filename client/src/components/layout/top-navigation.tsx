@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { 
@@ -11,14 +10,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { 
-  Sun, 
-  Moon, 
   Bell, 
   User, 
   LogOut, 
   Settings, 
   HelpCircle,
-  Menu 
+  Menu,
+  CreditCard,
+  BarChart3
 } from "lucide-react";
 
 interface TopNavigationProps {
@@ -28,7 +27,6 @@ interface TopNavigationProps {
 export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
   const { user, logoutMutation } = useAuth();
   const [location, navigate] = useLocation();
-  const [isDarkMode, setIsDarkMode] = useState(true);
   
   const navigationLinks = [
     { href: "/", label: "Dashboard" },
@@ -37,12 +35,6 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
     { href: "/withdrawals", label: "Saques" },
     { href: "/referrals", label: "Indicações" },
   ];
-  
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // In a real app, this would toggle a class on the html/body element
-    // or update a context that controls the theme
-  };
   
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -120,16 +112,7 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
               </DropdownMenuContent>
             </DropdownMenu>
             
-            {/* Theme Toggle */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleDarkMode}
-              className="ml-3 text-light-subtext hover:text-light-text"
-            >
-              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-            
+
             {/* User Profile Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -142,31 +125,69 @@ export default function TopNavigation({ onMenuClick }: TopNavigationProps) {
                   </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-dark-card border-dark-border">
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium text-light-text">{user?.firstName} {user?.lastName}</p>
-                    <p className="text-xs text-light-subtext truncate">{user?.email}</p>
+              <DropdownMenuContent align="end" className="w-64 bg-dark-card border-dark-border">
+                <div className="p-2">
+                  <div className="flex items-center space-x-3 p-2 rounded-lg bg-dark-surface/60">
+                    <div className="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center">
+                      <span className="font-medium text-base">{getInitials()}</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="text-sm font-medium text-light-text">{user?.firstName} {user?.lastName}</p>
+                      <p className="text-xs text-light-subtext truncate max-w-[150px]">{user?.email}</p>
+                    </div>
                   </div>
-                </DropdownMenuLabel>
+                </div>
                 <DropdownMenuSeparator className="bg-dark-border" />
-                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/profile")}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Perfil</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings")}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Configurações</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/support")}>
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  <span>Suporte</span>
-                </DropdownMenuItem>
+                <div className="p-1">
+                  <DropdownMenuItem 
+                    className="cursor-pointer flex items-center p-2 hover:bg-dark-surface rounded-md" 
+                    onClick={() => navigate("/profile")}
+                  >
+                    <User className="mr-3 h-4 w-4" />
+                    <span>Meu Perfil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer flex items-center p-2 hover:bg-dark-surface rounded-md" 
+                    onClick={() => navigate("/transactions")}
+                  >
+                    <BarChart3 className="mr-3 h-4 w-4" />
+                    <span>Minhas Transações</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer flex items-center p-2 hover:bg-dark-surface rounded-md" 
+                    onClick={() => navigate("/payment-methods")}
+                  >
+                    <CreditCard className="mr-3 h-4 w-4" />
+                    <span>Métodos de Pagamento</span>
+                  </DropdownMenuItem>
+                </div>
                 <DropdownMenuSeparator className="bg-dark-border" />
-                <DropdownMenuItem className="cursor-pointer text-negative" onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sair</span>
-                </DropdownMenuItem>
+                <div className="p-1">
+                  <DropdownMenuItem 
+                    className="cursor-pointer flex items-center p-2 hover:bg-dark-surface rounded-md" 
+                    onClick={() => navigate("/settings")}
+                  >
+                    <Settings className="mr-3 h-4 w-4" />
+                    <span>Configurações</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer flex items-center p-2 hover:bg-dark-surface rounded-md" 
+                    onClick={() => navigate("/support")}
+                  >
+                    <HelpCircle className="mr-3 h-4 w-4" />
+                    <span>Suporte</span>
+                  </DropdownMenuItem>
+                </div>
+                <DropdownMenuSeparator className="bg-dark-border" />
+                <div className="p-1">
+                  <DropdownMenuItem 
+                    className="cursor-pointer flex items-center p-2 hover:bg-negative/20 text-negative rounded-md" 
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-3 h-4 w-4" />
+                    <span>Sair</span>
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
