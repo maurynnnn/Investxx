@@ -17,8 +17,8 @@ export default function Logo({ size = "medium", withText = true }: LogoProps) {
   return (
     <div className="flex items-center">
       {withText && (
-        <div className={`font-display font-bold ${getTextSize()} bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80`}>
-          Invest<span className="text-secondary">X</span>
+        <div className={`font-display font-bold ${getTextSize()} bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80 hover:scale-105 transition-transform duration-300`}>
+          Invest<span className="text-secondary animate-pulse">X</span>
         </div>
       )}
     </div>
