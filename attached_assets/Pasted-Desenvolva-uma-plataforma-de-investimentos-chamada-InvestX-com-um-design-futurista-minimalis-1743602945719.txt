@@ -1,0 +1,25 @@
+Desenvolva uma plataforma de investimentos chamada **InvestX**, com um design **futurista, minimalista e altamente responsivo**, garantindo compatibilidade total com **dispositivos móveis e desktops**. O foco da plataforma é permitir investimentos rápidos e seguros, com planos de rentabilidade bem estruturados e um sistema sustentável para garantir longevidade.  
+
+A plataforma deve contar com um **sistema de autenticação e cadastro de usuários**, permitindo login seguro via e-mail e senha, recuperação de senha e sessão autenticada. O **painel do usuário** deve exibir informações como saldo total disponível, investimentos ativos, histórico de transações e saques, além de comissões recebidas. A interface deve ser **intuitiva e rápida**, permitindo ao usuário **reinvestir lucros diretamente** de sua conta.  
+
+A InvestX oferecerá **5 planos de investimento**, cada um com um valor mínimo e rentabilidade diária: **Básico (R$50, 10% ao dia), Intermediário (R$100, 12% ao dia), Avançado (R$500, 15% ao dia), Premium (R$1000, 18% ao dia) e Master (R$5000, 25% ao dia)**. O usuário poderá selecionar um plano, investir um valor e acompanhar seus rendimentos através de um **sistema automático de rentabilidade**, que adiciona os lucros ao saldo do usuário diariamente e exibe um histórico detalhado.  
+
+A **área de depósitos** deve permitir que os usuários adicionem saldo à plataforma por meio de **PIX ou transferência bancária**. O usuário informará o valor a ser depositado, enviará o comprovante e aguardará a **confirmação automática ou manual do administrador**. Após a aprovação, o saldo será **creditado na conta do usuário** para que ele possa realizar investimentos.  
+
+Os **saques poderão ser solicitados a cada 2 dias**. O usuário informará o valor e o método de recebimento (**PIX ou transferência**). As solicitações de saque devem ser **processadas automaticamente ou manualmente pelo administrador**, com status visível no painel do usuário.  
+
+A plataforma contará com um **sistema de indicação e comissão**, onde cada usuário terá um **link único de indicação**. Caso alguém se cadastre e invista usando esse link, o indicador receberá **5% de comissão sobre o valor investido**, automaticamente creditado em sua conta.  
+
+Para incentivar a fidelidade, usuários que mantiverem **investimentos ativos por 30 dias consecutivos** receberão um **bônus extra de 5%** sobre o valor investido, creditado automaticamente.  
+
+O **painel administrativo** deve permitir a **visualização de usuários cadastrados, monitoramento de investimentos ativos, aprovação de saques, gestão de comissões e bônus, além de criação e modificação de planos de investimento**.  
+
+Para garantir a **sustentabilidade da plataforma**, os investimentos dos usuários devem alimentar um **fundo de reserva**, garantindo fluxo contínuo de capital. A plataforma deve implementar um **sistema de redistribuição automática**, onde parte dos ganhos são reinvestidos para manter o equilíbrio financeiro. Criar **limites de saque baseados no volume total de investimentos ativos** evitará colapsos financeiros. Além disso, oferecer **bônus exclusivos para reinvestimentos** ajudará a manter a estabilidade.  
+
+O **design da plataforma deve ser altamente responsivo**, garantindo compatibilidade total com **mobile e desktop**. A interface será **futurista, minimalista e intuitiva**, com **dark mode opcional** e elementos visuais modernos para uma **experiência premium**.  
+
+Extras como **sistema de notificações via e-mail**, **dashboard interativo com gráficos**, **suporte via chat ou tickets** e **integração com APIs de pagamento** devem ser incluídos para maximizar a experiência do usuário.  
+
+Os passos para o desenvolvimento incluem: **criação da estrutura do banco de dados**, desenvolvimento do **sistema de login e autenticação**, construção do **painel do usuário**, implementação do **sistema de rentabilidade automática e cálculo de lucros**, desenvolvimento do **sistema de depósitos, saques e comissões**, criação do **painel administrativo**, **otimização de segurança e proteção de dados**, **testes de responsividade**, e por fim, **publicação e início das operações**.  
+
+O objetivo final da **InvestX** é criar uma plataforma **sustentável, segura e lucrativa**, garantindo **gestão inteligente do capital**, **experiência premium para investidores** e um **fluxo contínuo de investimentos e rendimentos**.
