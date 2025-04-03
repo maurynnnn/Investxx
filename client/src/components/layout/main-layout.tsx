@@ -10,44 +10,50 @@ interface MainLayoutProps {
 }
 
 // Definição da classe Particle fora do componente e do useEffect
-class Particle {
+class NetworkNode {
   x: number;
   y: number;
-  size: number;
-  speedX: number;
-  speedY: number;
+  vx: number;
+  vy: number;
   color: string;
-  opacity: number;
 
   constructor(width: number, height: number, color: string = '#3482F6') {
     this.x = Math.random() * width;
     this.y = Math.random() * height;
-    this.size = Math.random() * 2 + 0.5;
-    this.speedX = Math.random() * 0.5 - 0.25;
-    this.speedY = Math.random() * 0.5 - 0.25;
-    this.color = color; // Cor primária ou secundária (admin)
-    this.opacity = Math.random() * 0.5 + 0.1; // Transparência aleatória
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+    this.color = color;
   }
 
   update(width: number, height: number): void {
-    this.x += this.speedX;
-    this.y += this.speedY;
+    this.x += this.vx;
+    this.y += this.vy;
 
-    // Limites da tela
-    if (this.x > width) this.x = 0;
-    else if (this.x < 0) this.x = width;
-
-    if (this.y > height) this.y = 0;
-    else if (this.y < 0) this.y = height;
+    if (this.x < 0 || this.x > width) this.vx *= -1;
+    if (this.y < 0 || this.y > height) this.vy *= -1;
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
+  draw(ctx: CanvasRenderingContext2D, nodes: NetworkNode[], maxDistance: number = 150): void {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
-    ctx.globalAlpha = this.opacity;
     ctx.fill();
-    ctx.globalAlpha = 1;
+
+    nodes.forEach(node => {
+      const dx = this.x - node.x;
+      const dy = this.y - node.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < maxDistance) {
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(node.x, node.y);
+        ctx.strokeStyle = this.color;
+        ctx.globalAlpha = 0.2 * (1 - distance / maxDistance);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    });
   }
 }
 
@@ -77,14 +83,13 @@ export default function MainLayout({ children, isAdmin = false }: MainLayoutProp
     const secondaryColor = isAdmin ? '#6C63FF' : '#3482F6'; // Roxo primário para admin
 
     // Configuração das partículas
-    const particleCount = 50;
-    const particles: Particle[] = [];
+    const nodeCount = 30;
+    const nodes: NetworkNode[] = [];
 
-    // Criar partículas
-    for (let i = 0; i < particleCount; i++) {
-      // Alterna entre cores primárias e secundárias para admin
+    // Criar nós
+    for (let i = 0; i < nodeCount; i++) {
       const color = isAdmin && i % 2 === 0 ? secondaryColor : primaryColor;
-      particles.push(new Particle(canvas.width, canvas.height, color));
+      nodes.push(new NetworkNode(canvas.width, canvas.height, color));
     }
 
     // Função de animação
@@ -96,15 +101,13 @@ export default function MainLayout({ children, isAdmin = false }: MainLayoutProp
       
       ctx.clearRect(0, 0, width, height);
 
-      for (let i = 0; i < particles.length; i++) {
-        particles[i].update(width, height);
-        particles[i].draw(ctx);
+      nodes.forEach(node => {
+        node.update(width, height);
+        node.draw(ctx, nodes);
+      });
 
-        // Desenhar linhas entre partículas próximas
-        for (let j = i; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+      requestAnimationFrame(animate);
+    }qrt(dx * dx + dy * dy);
 
           if (distance < 100) {
             ctx.beginPath();
