@@ -26,6 +26,7 @@ import WithdrawalApprovals from "@/pages/admin/withdrawal-approvals";
 import AdminStatistics from "@/pages/admin/admin-statistics";
 import AdminTransactions from "@/pages/admin/admin-transactions";
 import AdminSettings from "@/pages/admin/admin-settings";
+import AdminNotifications from "@/pages/admin/admin-notifications";
 
 function Router() {
   return (
