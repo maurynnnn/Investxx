@@ -7,7 +7,7 @@ const MemoryStore = createMemoryStore(session);
 export interface IStorage {
   // Session storage
   sessionStore: session.SessionStore;
-  
+
   // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -15,43 +15,44 @@ export interface IStorage {
   createUser(user: InsertUser & { referralCode: string }): Promise<User>;
   updateUserBalance(id: number, newBalance: number): Promise<User | undefined>;
   updateUserLastLogin(id: number): Promise<User | undefined>;
-  
+
   // Plan methods
   getAllPlans(): Promise<Plan[]>;
   getPlan(id: number): Promise<Plan | undefined>;
   createPlan(plan: InsertPlan): Promise<Plan>;
-  
+
   // Investment methods
   getInvestmentsByUserId(userId: number): Promise<(Investment & { plan: Plan })[]>;
   getActiveInvestmentsByUserId(userId: number): Promise<(Investment & { plan: Plan })[]>;
   getAllActiveInvestments(): Promise<Investment[]>;
   createInvestment(investment: InsertInvestment): Promise<Investment>;
   updateInvestmentLastYieldDate(id: number): Promise<Investment | undefined>;
-  
+
   // Transaction methods
   getTransactionsByUserId(userId: number, limit?: number): Promise<Transaction[]>;
   createTransaction(transaction: InsertTransaction): Promise<Transaction>;
   getTotalYieldByUserId(userId: number): Promise<number>;
-  
+
   // Deposit methods
   getDepositsByUserId(userId: number): Promise<Deposit[]>;
   createDeposit(deposit: InsertDeposit): Promise<Deposit>;
   approveDeposit(id: number): Promise<Deposit | undefined>;
-  
+
   // Withdrawal methods
   getWithdrawalsByUserId(userId: number): Promise<Withdrawal[]>;
   getLastWithdrawalByUserId(userId: number): Promise<Withdrawal | undefined>;
   createWithdrawal(withdrawal: InsertWithdrawal): Promise<Withdrawal>;
   approveWithdrawal(id: number): Promise<Withdrawal | undefined>;
-  
+
   // Referral methods
   getReferralsByReferrerId(referrerId: number): Promise<(Referral & { referred: User })[]>;
   createReferral(referral: InsertReferral): Promise<Referral>;
   updateReferralCommission(referrerId: number, referredId: number, amount: number): Promise<Referral | undefined>;
   getTotalCommissionsByUserId(userId: number): Promise<number>;
-  
+
   // Loyalty Bonus methods
   createLoyaltyBonus(bonus: InsertLoyaltyBonus): Promise<LoyaltyBonus>;
+  getAdminNotifications(): Promise<any[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -64,7 +65,7 @@ export class MemStorage implements IStorage {
   private withdrawals: Map<number, Withdrawal>;
   private referrals: Map<number, Referral>;
   private loyaltyBonuses: Map<number, LoyaltyBonus>;
-  
+
   private userIdCounter: number;
   private planIdCounter: number;
   private investmentIdCounter: number;
@@ -78,7 +79,7 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // 24 hours
     });
-    
+
     this.users = new Map();
     this.plans = new Map();
     this.investments = new Map();
@@ -87,7 +88,7 @@ export class MemStorage implements IStorage {
     this.withdrawals = new Map();
     this.referrals = new Map();
     this.loyaltyBonuses = new Map();
-    
+
     this.userIdCounter = 1;
     this.planIdCounter = 1;
     this.investmentIdCounter = 1;
@@ -118,11 +119,11 @@ export class MemStorage implements IStorage {
   async createUser(user: InsertUser & { referralCode: string }): Promise<User> {
     const id = this.userIdCounter++;
     const now = new Date();
-    
+
     // Define o primeiro usuário como admin, todos os outros como user
     const isFirstUser = this.users.size === 0;
     const role = isFirstUser ? "admin" : "user";
-    
+
     const newUser: User = {
       id,
       ...user,
@@ -138,7 +139,7 @@ export class MemStorage implements IStorage {
   async updateUserBalance(id: number, newBalance: number): Promise<User | undefined> {
     const user = await this.getUser(id);
     if (!user) return undefined;
-    
+
     const updatedUser = { ...user, balance: newBalance };
     this.users.set(id, updatedUser);
     return updatedUser;
@@ -147,7 +148,7 @@ export class MemStorage implements IStorage {
   async updateUserLastLogin(id: number): Promise<User | undefined> {
     const user = await this.getUser(id);
     if (!user) return undefined;
-    
+
     const updatedUser = { ...user, lastLogin: new Date() };
     this.users.set(id, updatedUser);
     return updatedUser;
@@ -174,7 +175,7 @@ export class MemStorage implements IStorage {
     const userInvestments = Array.from(this.investments.values()).filter(
       (investment) => investment.userId === userId
     );
-    
+
     return Promise.all(
       userInvestments.map(async (investment) => {
         const plan = await this.getPlan(investment.planId);
@@ -187,7 +188,7 @@ export class MemStorage implements IStorage {
     const userInvestments = Array.from(this.investments.values()).filter(
       (investment) => investment.userId === userId && investment.isActive
     );
-    
+
     return Promise.all(
       userInvestments.map(async (investment) => {
         const plan = await this.getPlan(investment.planId);
@@ -220,7 +221,7 @@ export class MemStorage implements IStorage {
   async updateInvestmentLastYieldDate(id: number): Promise<Investment | undefined> {
     const investment = this.investments.get(id);
     if (!investment) return undefined;
-    
+
     const updatedInvestment = { ...investment, lastYieldDate: new Date() };
     this.investments.set(id, updatedInvestment);
     return updatedInvestment;
@@ -231,11 +232,11 @@ export class MemStorage implements IStorage {
     let transactions = Array.from(this.transactions.values())
       .filter((transaction) => transaction.userId === userId)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    
+
     if (limit) {
       transactions = transactions.slice(0, limit);
     }
-    
+
     return transactions;
   }
 
@@ -254,7 +255,7 @@ export class MemStorage implements IStorage {
     const yieldTransactions = Array.from(this.transactions.values()).filter(
       (transaction) => transaction.userId === userId && transaction.type === "yield"
     );
-    
+
     return yieldTransactions.reduce((total, transaction) => total + transaction.amount, 0);
   }
 
@@ -282,16 +283,16 @@ export class MemStorage implements IStorage {
   async approveDeposit(id: number): Promise<Deposit | undefined> {
     const deposit = this.deposits.get(id);
     if (!deposit || deposit.status !== "pending") return undefined;
-    
+
     const now = new Date();
     const updatedDeposit = { ...deposit, status: "approved", updatedAt: now };
     this.deposits.set(id, updatedDeposit);
-    
+
     // Add to user balance
     const user = await this.getUser(deposit.userId);
     if (user) {
       await this.updateUserBalance(user.id, user.balance + deposit.amount);
-      
+
       // Record transaction
       await this.createTransaction({
         userId: user.id,
@@ -300,7 +301,7 @@ export class MemStorage implements IStorage {
         description: `Deposit via ${deposit.method}`
       });
     }
-    
+
     return updatedDeposit;
   }
 
@@ -315,7 +316,7 @@ export class MemStorage implements IStorage {
     const userWithdrawals = Array.from(this.withdrawals.values())
       .filter((withdrawal) => withdrawal.userId === userId)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    
+
     return userWithdrawals[0];
   }
 
@@ -335,7 +336,7 @@ export class MemStorage implements IStorage {
   async approveWithdrawal(id: number): Promise<Withdrawal | undefined> {
     const withdrawal = this.withdrawals.get(id);
     if (!withdrawal || withdrawal.status !== "pending") return undefined;
-    
+
     const now = new Date();
     const updatedWithdrawal = {
       ...withdrawal,
@@ -343,7 +344,7 @@ export class MemStorage implements IStorage {
       processedAt: now,
     };
     this.withdrawals.set(id, updatedWithdrawal);
-    
+
     // Record transaction
     await this.createTransaction({
       userId: withdrawal.userId,
@@ -351,7 +352,7 @@ export class MemStorage implements IStorage {
       amount: 0, // Balance already deducted when creating withdrawal request
       description: `Withdrawal processed via ${withdrawal.method}`
     });
-    
+
     return updatedWithdrawal;
   }
 
@@ -360,7 +361,7 @@ export class MemStorage implements IStorage {
     const referrerReferrals = Array.from(this.referrals.values()).filter(
       (referral) => referral.referrerId === referrerId
     );
-    
+
     return Promise.all(
       referrerReferrals.map(async (referral) => {
         const referred = await this.getUser(referral.referredId);
@@ -386,9 +387,9 @@ export class MemStorage implements IStorage {
     const referral = Array.from(this.referrals.values()).find(
       (ref) => ref.referrerId === referrerId && ref.referredId === referredId
     );
-    
+
     if (!referral) return undefined;
-    
+
     const updatedReferral = {
       ...referral,
       commission: referral.commission + amount,
@@ -401,7 +402,7 @@ export class MemStorage implements IStorage {
     const userReferrals = Array.from(this.referrals.values()).filter(
       (referral) => referral.referrerId === userId
     );
-    
+
     return userReferrals.reduce((total, referral) => total + referral.commission, 0);
   }
 
@@ -415,6 +416,56 @@ export class MemStorage implements IStorage {
     };
     this.loyaltyBonuses.set(id, newBonus);
     return newBonus;
+  }
+
+  async getAdminNotifications(): Promise<any[]> {
+    const notifications = [];
+
+    // Get recent transactions
+    const recentTransactions = Array.from(this.transactions.values())
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0,10);
+
+    // Get recent user registrations
+    const recentUsers = Array.from(this.users.values())
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0,10);
+
+
+    // Create notifications for transactions
+    for (const transaction of recentTransactions) {
+      const user = await this.getUser(transaction.userId);
+      notifications.push({
+        id: `tx-${transaction.id}`,
+        title: `Nova ${transaction.type === 'deposit' ? 'Depósito' : 
+                transaction.type === 'withdrawal' ? 'Saque' : 
+                transaction.type === 'investment' ? 'Investimento' : 'Transação'}`,
+        message: `${user ? user.username : 'Usuário Desconhecido'} realizou ${transaction.type === 'deposit' ? 'um depósito de' : 
+                  transaction.type === 'withdrawal' ? 'um saque de' : 
+                  transaction.type === 'investment' ? 'um investimento de' : 'uma transação de'} ${transaction.amount}`,
+        type: transaction.type === 'deposit' ? 'success' : 
+              transaction.type === 'withdrawal' ? 'warning' : 'info',
+        createdAt: transaction.createdAt,
+        read: false
+      });
+    }
+
+    // Create notifications for new users
+    for (const user of recentUsers) {
+      notifications.push({
+        id: `user-${user.id}`,
+        title: "Novo Usuário",
+        message: `${user.username} se registrou na plataforma`,
+        type: "info",
+        createdAt: user.createdAt,
+        read: false
+      });
+    }
+
+    // Sort by date
+    return notifications.sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   }
 }
 
