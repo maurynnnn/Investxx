@@ -1,7 +1,7 @@
 
 import { AdminLayout } from "../../components/admin/admin-layout";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable } from "../../components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { formatCurrency } from "../../lib/utils";
 
 export default function AdminTransactions() {
@@ -15,21 +15,30 @@ export default function AdminTransactions() {
 
   return (
     <AdminLayout title="Transações" subtitle="Histórico de transações da plataforma">
-      <DataTable 
-        data={transactions || []}
-        columns={[
-          { header: "ID", accessorKey: "id" },
-          { header: "Usuário", accessorKey: "user" },
-          { header: "Tipo", accessorKey: "type" },
-          { 
-            header: "Valor", 
-            accessorKey: "amount",
-            cell: ({ row }) => formatCurrency(row.original.amount)
-          },
-          { header: "Status", accessorKey: "status" },
-          { header: "Data", accessorKey: "date" }
-        ]}
-      />
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Usuário</TableHead>
+            <TableHead>Tipo</TableHead>
+            <TableHead>Valor</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Data</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {(transactions || []).map((transaction) => (
+            <TableRow key={transaction.id}>
+              <TableCell>{transaction.id}</TableCell>
+              <TableCell>{transaction.user}</TableCell>
+              <TableCell>{transaction.type}</TableCell>
+              <TableCell>{formatCurrency(transaction.amount)}</TableCell>
+              <TableCell>{transaction.status}</TableCell>
+              <TableCell>{transaction.date}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </AdminLayout>
   );
 }
