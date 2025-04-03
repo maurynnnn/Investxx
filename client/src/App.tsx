@@ -22,33 +22,31 @@ import PaymentMethodsPage from "@/pages/payment-methods-page";
 import AdminDashboard from "@/pages/admin/admin-dashboard";
 import AdminUsersPage from "@/pages/admin/admin-users-page";
 import AdminPlansPage from "@/pages/admin/admin-plans-page";
-import AdminTransactionsPage from "@/pages/admin/admin-transactions-page"; // Added import
 
 function Router() {
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
-
+      
       {/* Main Navigation Routes - Somente para usuários comuns */}
       <ProtectedRoute path="/" component={DashboardPage} userOnly={true} />
       <ProtectedRoute path="/investments" component={InvestmentsPage} userOnly={true} />
       <ProtectedRoute path="/deposits" component={DepositsPage} userOnly={true} />
       <ProtectedRoute path="/withdrawals" component={WithdrawalsPage} userOnly={true} />
       <ProtectedRoute path="/referrals" component={ReferralsPage} userOnly={true} />
-
+      
       {/* User Menu Routes - Somente para usuários comuns */}
       <ProtectedRoute path="/profile" component={ProfilePage} userOnly={true} />
       <ProtectedRoute path="/settings" component={SettingsPage} userOnly={true} />
       <ProtectedRoute path="/support" component={SupportPage} userOnly={true} />
       <ProtectedRoute path="/transactions" component={TransactionsPage} userOnly={true} />
       <ProtectedRoute path="/payment-methods" component={PaymentMethodsPage} userOnly={true} />
-
+      
       {/* Admin Routes */}
       <ProtectedRoute path="/admin" component={AdminDashboard} adminOnly={true} />
       <ProtectedRoute path="/admin/users" component={AdminUsersPage} adminOnly={true} />
       <ProtectedRoute path="/admin/plans" component={AdminPlansPage} adminOnly={true} />
-      <ProtectedRoute path="/admin/transactions" component={AdminTransactionsPage} adminOnly={true} /> {/* Added route */}
-
+      
       <Route component={NotFound} />
     </Switch>
   );
