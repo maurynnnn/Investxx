@@ -1,7 +1,7 @@
 import { MainLayout } from "../../components/layout/main-layout";
 import { AdminLayout } from "../../components/admin/admin-layout";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable } from "../../components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { Button } from "../../components/ui/button";
 import { Shield, UserPlus } from "lucide-react";
 import { useState } from "react";
@@ -68,25 +68,35 @@ export default function UsersManagement() {
           </Dialog>
         </div>
 
-        <DataTable 
-          data={users || []}
-          columns={[
-            { header: "ID", accessorKey: "id" },
-            { header: "Username", accessorKey: "username" },
-            { header: "Email", accessorKey: "email" },
-            { header: "Role", accessorKey: "role" },
-            { header: "Status", accessorKey: "status" },
-            { 
-              header: "Ações",
-              cell: () => (
-                <div className="space-x-2">
-                  <Button variant="outline" size="sm">Editar</Button>
-                  <Button variant="outline" size="sm" className="text-negative">Bloquear</Button>
-                </div>
-              )
-            }
-          ]}
-        />
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Username</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(users || []).map((user) => (
+              <TableRow key={user.id}>
+                <TableCell>{user.id}</TableCell>
+                <TableCell>{user.username}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.role}</TableCell>
+                <TableCell>{user.status}</TableCell>
+                <TableCell>
+                  <div className="space-x-2">
+                    <Button variant="outline" size="sm">Editar</Button>
+                    <Button variant="outline" size="sm" className="text-negative">Bloquear</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </AdminLayout>
   );

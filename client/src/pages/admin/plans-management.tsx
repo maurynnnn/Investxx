@@ -1,6 +1,6 @@
 import { AdminLayout } from "../../components/admin/admin-layout";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable } from "../../components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { Button } from "../../components/ui/button";
 import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
@@ -55,26 +55,37 @@ export default function PlansManagement() {
           </Dialog>
         </div>
 
-        <DataTable 
-          data={plans || []}
-          columns={[
-            { header: "ID", accessorKey: "id" },
-            { header: "Nome", accessorKey: "name" },
-            { header: "Mín", accessorKey: "minAmount" },
-            { header: "Máx", accessorKey: "maxAmount" },
-            { header: "Retorno", accessorKey: "returnRate" },
-            { header: "Duração", accessorKey: "duration" },
-            { 
-              header: "Ações",
-              cell: () => (
-                <div className="space-x-2">
-                  <Button variant="outline" size="sm">Editar</Button>
-                  <Button variant="outline" size="sm" className="text-negative">Remover</Button>
-                </div>
-              )
-            }
-          ]}
-        />
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Nome</TableHead>
+              <TableHead>Mín</TableHead>
+              <TableHead>Máx</TableHead>
+              <TableHead>Retorno</TableHead>
+              <TableHead>Duração</TableHead>
+              <TableHead>Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(plans || []).map((plan) => (
+              <TableRow key={plan.id}>
+                <TableCell>{plan.id}</TableCell>
+                <TableCell>{plan.name}</TableCell>
+                <TableCell>{plan.minAmount}</TableCell>
+                <TableCell>{plan.maxAmount}</TableCell>
+                <TableCell>{plan.returnRate}</TableCell>
+                <TableCell>{plan.duration}</TableCell>
+                <TableCell>
+                  <div className="space-x-2">
+                    <Button variant="outline" size="sm">Editar</Button>
+                    <Button variant="outline" size="sm" className="text-negative">Remover</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </AdminLayout>
   );
