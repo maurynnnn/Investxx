@@ -82,9 +82,9 @@ export function AdminNavigation() {
       icon: <Activity className="h-5 w-5" />,
     },
     {
-      href: "/admin/transactions",
-      label: "Transações",
-      icon: <Activity className="h-5 w-5" />,
+      href: "/admin/notifications",
+      label: "Notificações",
+      icon: <Bell className="h-5 w-5" />,
     },
   ];
   
