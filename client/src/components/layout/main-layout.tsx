@@ -9,7 +9,6 @@ interface MainLayoutProps {
   isAdmin?: boolean;
 }
 
-// Definição da classe Particle fora do componente e do useEffect
 class NetworkNode {
   x: number;
   y: number;
@@ -66,7 +65,6 @@ export default function MainLayout({ children, isAdmin = false }: MainLayoutProp
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Partículas animadas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -74,61 +72,35 @@ export default function MainLayout({ children, isAdmin = false }: MainLayoutProp
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Configuração de tela em tela cheia
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Cores baseadas no modo (normal ou admin)
-    const primaryColor = isAdmin ? '#12B7E2' : '#3482F6'; // Azul secundário para admin
-    const secondaryColor = isAdmin ? '#6C63FF' : '#3482F6'; // Roxo primário para admin
+    const primaryColor = isAdmin ? '#12B7E2' : '#3482F6';
+    const secondaryColor = isAdmin ? '#6C63FF' : '#3482F6';
 
-    // Configuração das partículas
     const nodeCount = 30;
     const nodes: NetworkNode[] = [];
 
-    // Criar nós
     for (let i = 0; i < nodeCount; i++) {
       const color = isAdmin && i % 2 === 0 ? secondaryColor : primaryColor;
       nodes.push(new NetworkNode(canvas.width, canvas.height, color));
     }
 
-    // Função de animação
     function animate() {
       if (!ctx || !canvas) return;
-      
-      const width = canvas.width;
-      const height = canvas.height;
-      
-      ctx.clearRect(0, 0, width, height);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       nodes.forEach(node => {
-        node.update(width, height);
+        node.update(canvas.width, canvas.height);
         node.draw(ctx, nodes);
       });
 
       requestAnimationFrame(animate);
-    }qrt(dx * dx + dy * dy);
-
-          if (distance < 100) {
-            ctx.beginPath();
-            ctx.strokeStyle = particles[i].color;
-            ctx.globalAlpha = 0.1 * (1 - distance / 100);
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-          }
-        }
-      }
-
-      requestAnimationFrame(animate);
     }
 
-    // Iniciar animação
     animate();
 
-    // Redimensionar canvas quando a janela é redimensionada
     const handleResize = () => {
       if (canvas) {
         canvas.width = window.innerWidth;
@@ -145,30 +117,25 @@ export default function MainLayout({ children, isAdmin = false }: MainLayoutProp
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-bg text-light-text overflow-hidden relative">
-      {/* Partículas de fundo */}
       <canvas 
         ref={canvasRef}
         className="absolute inset-0 z-0 pointer-events-none opacity-50"
       />
-      
-      {/* Top Navigation - fixo */}
+
       <TopNavigation onMenuClick={toggleSidebar} />
-      
-      {/* Espaçador para compensar o header fixo */}
+
       <div className="h-16"></div>
-      
+
       <div className="flex flex-1 relative z-10">
-        {/* Sidebar */}
         <SideNavigation isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        
-        {/* Main Content */}
+
         <main className={`flex-grow px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full mx-auto transition-all duration-300 ${isAdmin ? 'lg:pl-64 xl:pl-72' : ''}`}>
           <div className="w-full h-full max-w-7xl mx-auto">
             {children}
           </div>
         </main>
       </div>
-      
+
       <Footer />
     </div>
   );
