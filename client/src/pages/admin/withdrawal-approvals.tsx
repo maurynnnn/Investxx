@@ -1,10 +1,11 @@
+
 import { AdminLayout } from "../../components/admin/admin-layout";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable } from "../../components/ui/table";
-import { Button } from "../../components/ui/button";
 import { Check, X } from "lucide-react";
 import { useToast } from "../../hooks/use-toast";
 import { formatCurrency } from "../../lib/utils";
+import { Button } from "../../components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 
 export default function WithdrawalApprovals() {
   const { data: withdrawals } = useQuery({
@@ -20,39 +21,46 @@ export default function WithdrawalApprovals() {
   return (
     <AdminLayout title="Aprovação de Saques" subtitle="Gerencie as solicitações de saque">
       <div className="space-y-4">
-        <DataTable 
-          data={withdrawals || []}
-          columns={[
-            { header: "ID", accessorKey: "id" },
-            { header: "Usuário", accessorKey: "user" },
-            { 
-              header: "Valor", 
-              accessorKey: "amount",
-              cell: ({ row }) => formatCurrency(row.original.amount)
-            },
-            { header: "Status", accessorKey: "status" },
-            { header: "Data", accessorKey: "date" },
-            { header: "Método", accessorKey: "method" },
-            { 
-              header: "Ações",
-              cell: () => (
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="text-positive" onClick={() => {
-                    toast({
-                      title: "Saque aprovado",
-                      description: "O saque foi aprovado com sucesso"
-                    });
-                  }}>
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" className="text-negative">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              )
-            }
-          ]}
-        />
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Usuário</TableHead>
+              <TableHead>Valor</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Data</TableHead>
+              <TableHead>Método</TableHead>
+              <TableHead>Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {withdrawals?.map((withdrawal) => (
+              <TableRow key={withdrawal.id}>
+                <TableCell>{withdrawal.id}</TableCell>
+                <TableCell>{withdrawal.user}</TableCell>
+                <TableCell>{formatCurrency(withdrawal.amount)}</TableCell>
+                <TableCell>{withdrawal.status}</TableCell>
+                <TableCell>{withdrawal.date}</TableCell>
+                <TableCell>{withdrawal.method}</TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="text-positive" onClick={() => {
+                      toast({
+                        title: "Saque aprovado",
+                        description: "O saque foi aprovado com sucesso"
+                      });
+                    }}>
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-negative">
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </AdminLayout>
   );
