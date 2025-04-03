@@ -4,15 +4,23 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
 export default function AdminStatistics() {
-  const { data: statistics } = useQuery({
+  const { data: statistics, isLoading } = useQuery({
     queryKey: ["/api/admin/statistics"],
     placeholderData: {
-      totalTransactions: 150,
-      averageInvestment: 5000,
-      activeInvestments: 45,
-      completedInvestments: 30
+      totalTransactions: 0,
+      averageInvestment: 0,
+      activeInvestments: 0,
+      completedInvestments: 0
     }
   });
+
+  if (isLoading) {
+    return (
+      <AdminLayout title="Estatísticas" subtitle="Análise detalhada da plataforma">
+        <div>Carregando...</div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout title="Estatísticas" subtitle="Análise detalhada da plataforma">
