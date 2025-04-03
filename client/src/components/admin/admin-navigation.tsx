@@ -28,13 +28,13 @@ const AdminNavItem = ({ href, label, icon, active }: AdminNavItemProps) => {
       {active && (
         <span className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"></span>
       )}
-      
+
       <span className={`mr-3 transition-colors ${active ? "text-primary" : "text-light-subtext group-hover:text-light-text"}`}>
         {icon}
       </span>
-      
+
       <span className="flex-1">{label}</span>
-      
+
       {/* Indicador de status ativo */}
       {active && (
         <CircleDot className="h-3 w-3 ml-2 text-primary opacity-70" />
@@ -69,7 +69,7 @@ export function AdminNavigation() {
       icon: <CreditCard className="h-5 w-5" />,
     },
   ];
-  
+
   const analysisNavItems = [
     {
       href: "/admin/statistics",
@@ -81,18 +81,18 @@ export function AdminNavigation() {
       label: "Transações",
       icon: <Activity className="h-5 w-5" />,
     },
-    {
-      href: "/admin/notifications",
-      label: "Notificações",
-      icon: <Bell className="h-5 w-5" />,
-    },
   ];
-  
+
   const systemNavItems = [
     {
       href: "/admin/settings",
       label: "Configurações",
       icon: <Settings className="h-5 w-5" />,
+    },
+    {
+      href: "/admin/notifications",
+      label: "Notificações",
+      icon: <Bell className="h-5 w-5" />,
     },
   ];
 
@@ -119,7 +119,7 @@ export function AdminNavigation() {
           />
         ))}
       </nav>
-      
+
       {/* Análise e Relatórios */}
       <div className="px-3 mb-3">
         <div className="flex items-center">
@@ -141,7 +141,7 @@ export function AdminNavigation() {
           />
         ))}
       </nav>
-      
+
       {/* Sistema */}
       <div className="px-3 mb-3">
         <div className="flex items-center">
