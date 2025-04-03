@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useAuth, registerSchema } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
