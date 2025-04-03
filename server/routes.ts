@@ -235,6 +235,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Transactions API
+  app.get("/api/admin/transactions", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== "admin") {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const allTransactions = Array.from(storage.transactions.values())
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      const transactionsWithUsernames = await Promise.all(
+        allTransactions.map(async (transaction) => {
+          const user = await storage.getUser(transaction.userId);
+          return {
+            ...transaction,
+            username: user ? user.username : 'Unknown User'
+          };
+        })
+      );
+
+      res.json(transactionsWithUsernames);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch transactions" });
+    }
+  });
+
   // Admin Notifications API
   app.get("/api/admin/notifications", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);

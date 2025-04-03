@@ -2,43 +2,58 @@
 import { AdminLayout } from "../../components/admin/admin-layout";
 import { useQuery } from "@tanstack/react-query";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
-import { formatCurrency } from "../../lib/utils";
+import { formatCurrency, formatDate } from "../../lib/utils";
+
+interface Transaction {
+  id: number;
+  userId: number;
+  username: string;
+  type: string;
+  amount: number;
+  description: string;
+  createdAt: string;
+}
 
 export default function AdminTransactions() {
-  const { data: transactions } = useQuery({
+  const { data: transactions } = useQuery<Transaction[]>({
     queryKey: ["/api/admin/transactions"],
-    placeholderData: [
-      { id: 1, user: "user1", type: "deposit", amount: 1000, status: "completed", date: "2024-01-20" },
-      { id: 2, user: "user2", type: "withdrawal", amount: 500, status: "pending", date: "2024-01-19" },
-    ]
+    refetchInterval: 5000 // Refetch every 5 seconds
   });
 
   return (
-    <AdminLayout title="Transações" subtitle="Histórico de transações da plataforma">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Usuário</TableHead>
-            <TableHead>Tipo</TableHead>
-            <TableHead>Valor</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Data</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {(transactions || []).map((transaction) => (
-            <TableRow key={transaction.id}>
-              <TableCell>{transaction.id}</TableCell>
-              <TableCell>{transaction.user}</TableCell>
-              <TableCell>{transaction.type}</TableCell>
-              <TableCell>{formatCurrency(transaction.amount)}</TableCell>
-              <TableCell>{transaction.status}</TableCell>
-              <TableCell>{transaction.date}</TableCell>
+    <AdminLayout title="Transações" subtitle="Gerencie todas as transações do sistema">
+      <div className="space-y-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Usuário</TableHead>
+              <TableHead>Tipo</TableHead>
+              <TableHead>Valor</TableHead>
+              <TableHead>Descrição</TableHead>
+              <TableHead>Data</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {transactions?.map((transaction) => (
+              <TableRow key={transaction.id}>
+                <TableCell>{transaction.username}</TableCell>
+                <TableCell className="capitalize">{transaction.type}</TableCell>
+                <TableCell className={
+                  transaction.type === "deposit" || transaction.type === "yield" || transaction.type === "commission"
+                    ? "text-positive"
+                    : transaction.type === "withdrawal"
+                      ? "text-negative"
+                      : ""
+                }>
+                  {formatCurrency(transaction.amount)}
+                </TableCell>
+                <TableCell>{transaction.description}</TableCell>
+                <TableCell>{formatDate(new Date(transaction.createdAt))}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </AdminLayout>
   );
 }
