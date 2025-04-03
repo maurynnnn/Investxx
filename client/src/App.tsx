@@ -46,6 +46,10 @@ function Router() {
       <ProtectedRoute path="/admin" component={AdminDashboard} adminOnly={true} />
       <ProtectedRoute path="/admin/users" component={AdminUsersPage} adminOnly={true} />
       <ProtectedRoute path="/admin/plans" component={AdminPlansPage} adminOnly={true} />
+      <ProtectedRoute path="/admin/withdrawals" component={WithdrawalApprovals} adminOnly={true} />
+      <ProtectedRoute path="/admin/statistics" component={AdminStatistics} adminOnly={true} />
+      <ProtectedRoute path="/admin/transactions" component={AdminTransactions} adminOnly={true} />
+      <ProtectedRoute path="/admin/settings" component={AdminSettings} adminOnly={true} />
       
       <Route component={NotFound} />
     </Switch>

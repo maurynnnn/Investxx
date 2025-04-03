@@ -72,9 +72,14 @@ export function AdminNavigation() {
   
   const analysisNavItems = [
     {
-      href: "/admin/dashboard",
+      href: "/admin/statistics",
       label: "Estatísticas",
       icon: <PieChart className="h-5 w-5" />,
+    },
+    {
+      href: "/admin/transactions",
+      label: "Transações",
+      icon: <Activity className="h-5 w-5" />,
     },
     {
       href: "/admin/transactions",
