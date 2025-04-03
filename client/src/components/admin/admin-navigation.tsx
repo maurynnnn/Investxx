@@ -49,7 +49,7 @@ export function AdminNavigation() {
   // Grupos de navegação para melhor organização
   const mainNavItems = [
     {
-      href: "/admin",
+      href: "/admin/dashboard",
       label: "Dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
     },
@@ -72,7 +72,7 @@ export function AdminNavigation() {
   
   const analysisNavItems = [
     {
-      href: "/admin/statistics",
+      href: "/admin/dashboard",
       label: "Estatísticas",
       icon: <PieChart className="h-5 w-5" />,
     },
@@ -84,11 +84,6 @@ export function AdminNavigation() {
   ];
   
   const systemNavItems = [
-    {
-      href: "/admin/notifications",
-      label: "Notificações",
-      icon: <Bell className="h-5 w-5" />,
-    },
     {
       href: "/admin/settings",
       label: "Configurações",
