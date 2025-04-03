@@ -22,6 +22,10 @@ import PaymentMethodsPage from "@/pages/payment-methods-page";
 import AdminDashboard from "@/pages/admin/admin-dashboard";
 import AdminUsersPage from "@/pages/admin/admin-users-page";
 import AdminPlansPage from "@/pages/admin/admin-plans-page";
+import WithdrawalApprovals from "@/pages/admin/withdrawal-approvals";
+import AdminStatistics from "@/pages/admin/admin-statistics";
+import AdminTransactions from "@/pages/admin/admin-transactions";
+import AdminSettings from "@/pages/admin/admin-settings";
 
 function Router() {
   return (
