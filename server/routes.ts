@@ -22,10 +22,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Transaction Management API
+  app.get("/api/admin/transactions", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== 'admin') {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const transactions = await storage.getAllTransactions();
+      res.json(transactions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch transactions" });
+    }
+  });
+
+  app.get("/api/admin/transactions/:userId", async (req, res) => {
+    if (!req.isAuthenticated() || req.user!.role !== 'admin') {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const transactions = await storage.getTransactionsByUserId(parseInt(req.params.userId));
+      res.json(transactions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user transactions" });
+    }
+  });
+
   // User Dashboard Data API
   app.get("/api/dashboard", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const userId = req.user!.id;
       const user = await storage.getUser(userId);
@@ -34,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const referrals = await storage.getReferralsByReferrerId(userId);
       const totalYield = await storage.getTotalYieldByUserId(userId);
       const totalCommissions = await storage.getTotalCommissionsByUserId(userId);
-      
+
       res.json({
         balance: user!.balance,
         activeInvestments,
@@ -51,7 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Investments API
   app.get("/api/investments", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const investments = await storage.getInvestmentsByUserId(req.user!.id);
       res.json(investments);
@@ -62,33 +89,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/investments", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const userId = req.user!.id;
       const validatedData = insertInvestmentSchema.parse({ ...req.body, userId });
-      
+
       // Check if user has enough balance
       const user = await storage.getUser(userId);
       if (!user || user.balance < validatedData.amount) {
         return res.status(400).json({ message: "Insufficient balance" });
       }
-      
+
       // Get the plan to verify minimum investment
       const plan = await storage.getPlan(validatedData.planId);
       if (!plan || !plan.isActive) {
         return res.status(400).json({ message: "Invalid investment plan" });
       }
-      
+
       if (validatedData.amount < plan.minimumInvestment) {
         return res.status(400).json({ 
           message: `Minimum investment for this plan is ${plan.minimumInvestment}` 
         });
       }
-      
+
       // Create investment and deduct from balance
       await storage.updateUserBalance(userId, user.balance - validatedData.amount);
       const investment = await storage.createInvestment(validatedData);
-      
+
       // Record transaction
       await storage.createTransaction({
         userId,
@@ -96,13 +123,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         amount: -validatedData.amount,
         description: `Investment in ${plan.name} plan`
       });
-      
+
       // If user was referred, give commission to referrer (5% of investment)
       if (user.referredBy) {
         const commission = validatedData.amount * 0.05;
         await storage.updateReferralCommission(user.referredBy, userId, commission);
         await storage.updateUserBalance(user.referredBy, (await storage.getUser(user.referredBy))!.balance + commission);
-        
+
         // Record commission transaction
         await storage.createTransaction({
           userId: user.referredBy,
@@ -111,7 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           description: `Referral commission from ${user.username}`
         });
       }
-      
+
       res.status(201).json(investment);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -124,7 +151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Deposits API
   app.get("/api/deposits", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const deposits = await storage.getDepositsByUserId(req.user!.id);
       res.json(deposits);
@@ -135,11 +162,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/deposits", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const userId = req.user!.id;
       const validatedData = insertDepositSchema.parse({ ...req.body, userId });
-      
+
       const deposit = await storage.createDeposit(validatedData);
       res.status(201).json(deposit);
     } catch (error) {
@@ -153,7 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Withdrawals API
   app.get("/api/withdrawals", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const withdrawals = await storage.getWithdrawalsByUserId(req.user!.id);
       res.json(withdrawals);
@@ -164,36 +191,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/withdrawals", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const userId = req.user!.id;
       const validatedData = insertWithdrawalSchema.parse({ ...req.body, userId });
-      
+
       // Check if user has enough balance
       const user = await storage.getUser(userId);
       if (!user || user.balance < validatedData.amount) {
         return res.status(400).json({ message: "Insufficient balance" });
       }
-      
+
       // Check last withdrawal date (no withdrawal in the last 2 days)
       const lastWithdrawal = await storage.getLastWithdrawalByUserId(userId);
       if (lastWithdrawal) {
         const twoDaysAgo = new Date();
         twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-        
+
         if (new Date(lastWithdrawal.createdAt) > twoDaysAgo) {
           return res.status(400).json({ 
             message: "You can only request a withdrawal every 2 days" 
           });
         }
       }
-      
+
       // Create withdrawal request
       const withdrawal = await storage.createWithdrawal(validatedData);
-      
+
       // Update user balance
       await storage.updateUserBalance(userId, user.balance - validatedData.amount);
-      
+
       // Record transaction
       await storage.createTransaction({
         userId,
@@ -201,7 +228,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         amount: -validatedData.amount,
         description: `Withdrawal request via ${validatedData.method}`
       });
-      
+
       res.status(201).json(withdrawal);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -214,7 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Referrals API
   app.get("/api/referrals", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const referrals = await storage.getReferralsByReferrerId(req.user!.id);
       res.json(referrals);
@@ -226,7 +253,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Transactions API
   app.get("/api/transactions", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const transactions = await storage.getTransactionsByUserId(req.user!.id);
       res.json(transactions);
@@ -238,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Simulate daily yield calculation (would be a cron job in a real app)
   app.post("/api/admin/calculate-yields", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       await calculateDailyYields();
       res.json({ message: "Yields calculated successfully" });
@@ -308,12 +335,12 @@ async function initializePlans() {
 // Calculate daily yields for all active investments
 async function calculateDailyYields() {
   const activeInvestments = await storage.getAllActiveInvestments();
-  
+
   for (const investment of activeInvestments) {
     // Check if yield already calculated today
     const lastYieldDate = new Date(investment.lastYieldDate);
     const today = new Date();
-    
+
     if (
       lastYieldDate.getDate() === today.getDate() &&
       lastYieldDate.getMonth() === today.getMonth() &&
@@ -321,23 +348,23 @@ async function calculateDailyYields() {
     ) {
       continue;
     }
-    
+
     // Get plan details
     const plan = await storage.getPlan(investment.planId);
     if (!plan) continue;
-    
+
     // Calculate yield
     const yield_ = investment.amount * plan.dailyInterestRate;
-    
+
     // Update investment last yield date
     await storage.updateInvestmentLastYieldDate(investment.id);
-    
+
     // Update user balance
     const user = await storage.getUser(investment.userId);
     if (!user) continue;
-    
+
     await storage.updateUserBalance(user.id, user.balance + yield_);
-    
+
     // Record transaction
     await storage.createTransaction({
       userId: user.id,
@@ -345,25 +372,25 @@ async function calculateDailyYields() {
       amount: yield_,
       description: `Daily yield from ${plan.name} plan`
     });
-    
+
     // Check for 30-day loyalty bonus
     const startDate = new Date(investment.startDate);
     const daysActive = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     if (daysActive === 30) {
       // Calculate 5% bonus
       const bonus = investment.amount * 0.05;
-      
+
       // Update user balance
       await storage.updateUserBalance(user.id, user.balance + bonus);
-      
+
       // Record loyalty bonus
       await storage.createLoyaltyBonus({
         userId: user.id,
         investmentId: investment.id,
         amount: bonus
       });
-      
+
       // Record transaction
       await storage.createTransaction({
         userId: user.id,
