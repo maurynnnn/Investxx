@@ -22,6 +22,14 @@ export default function AdminStatistics() {
     );
   }
 
+  if (!statistics) {
+    return (
+      <AdminLayout title="Estatísticas" subtitle="Análise detalhada da plataforma">
+        <div>Nenhuma estatística disponível</div>
+      </AdminLayout>
+    );
+  }
+
   return (
     <AdminLayout title="Estatísticas" subtitle="Análise detalhada da plataforma">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
